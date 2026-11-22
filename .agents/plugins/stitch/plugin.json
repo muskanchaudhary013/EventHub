@@ -1,0 +1,5 @@
+{
+  "name": "stitch",
+  "displayName": "Stitch",
+  "description": "Google Stitch MCP server integration for EventHub."
+}

@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Kinetic Campus / Stitch Design System Colors */
+  --color-background: #fbf8fc;
+  --color-on-background: #1b1b1e;
+  --color-canvas-warm: #faf7f0;
+  --color-border-warm: #e8e2d5;
+
+  --color-surface: #fbf8fc;
+  --color-surface-bright: #fbf8fc;
+  --color-surface-dim: #dcd9dd;
+  --color-surface-variant: #e4e1e6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f2f7;
+  --color-surface-container: #f0edf1;
+  --color-surface-container-high: #eae7eb;
+  --color-surface-container-highest: #e4e1e6;
+
+  --color-on-surface: #1b1b1e;
+  --color-on-surface-variant: #5a403f;
+  --color-inverse-surface: #303033;
+  --color-inverse-on-surface: #f3f0f4;
+
+  --color-outline: #8e706f;
+  --color-outline-variant: #e2bebc;
+
+  --color-primary: #b52330;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ff5a5f;
+  --color-on-primary-container: #61000e;
+  --color-primary-fixed: #ffdad8;
+  --color-primary-fixed-dim: #ffb3b0;
+  --color-on-primary-fixed: #410007;
+  --color-on-primary-fixed-variant: #92001b;
+  --color-inverse-primary: #ffb3b0;
+
+  --color-secondary: #855300;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fea619;
+  --color-on-secondary-container: #684000;
+  --color-secondary-fixed: #ffddb8;
+  --color-secondary-fixed-dim: #ffb95f;
+  --color-on-secondary-fixed: #2a1700;
+  --color-on-secondary-fixed-variant: #653e00;
+
+  --color-tertiary: #006c49;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #00a874;
+  --color-on-tertiary-container: #003421;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* Google Fonts mapped from next/font/google CSS variables */
+  --font-display: var(--font-plus-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+
+  /* Stitch Spacing Tokens */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-margin: 2rem;
+  --spacing-margin-sm: 1rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-gutter-sm: 1rem;
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+    overscroll-behavior: none;
+  }
+}
+
+/* Stitch Kinetic Campus Typography Utilities */
+.font-display-hero {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+.font-headline {
+  font-family: var(--font-display);
+}
+.font-body {
+  font-family: var(--font-sans);
+}
+.font-code {
+  font-family: var(--font-mono);
+}
+
+.text-display-hero {
+  font-size: clamp(2.15rem, 4.2vw, 3.5rem);
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.text-headline-lg {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.text-headline-md {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.text-headline-sm {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.text-label-token {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.text-label-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.text-metric-kpi {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scanner Laser Animation */
+@keyframes scanSweep {
+  0%,
+  100% {
+    transform: translateY(-96px);
+  }
+  50% {
+    transform: translateY(96px);
+  }
+}
+
+.animate-scan-sweep {
+  animation: scanSweep 2.4s ease-in-out infinite;
+}
+
+/* Hide scrollbars on horizontal pill bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media print {
+  header,
+  footer,
+  aside,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding-top: 0 !important;
+  }
+}

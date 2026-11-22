@@ -1,0 +1,34 @@
+# dependencies
+**/node_modules
+**/.pnp
+**/.pnp.*
+
+# next.js
+**/.next/
+**/out/
+**/build/
+**/dist/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env files (keep all Firebase, Stitch & backend secrets out of git)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# typescript
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# keep Stitch MCP API key out of git
+.agents/plugins/stitch/mcp_config.json
