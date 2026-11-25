@@ -40,9 +40,11 @@ yarn-error.log*
 
 # env files (strictly keep credentials, tokens & secrets out of Git)
 .env
+.env.local
 .env.*
 !.env.example
 **/.env
+**/.env.local
 **/.env.*
 !**/.env.example
 
