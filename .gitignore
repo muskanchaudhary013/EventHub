@@ -9,18 +9,36 @@
 **/build/
 **/dist/
 
-# misc
+# Operating system files
 .DS_Store
-*.pem
-.vscode/
-.idea/
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
 
-# debug
+# Editors and IDEs (keeps personal IDE setups from conflicting between teammates)
+.vscode/
+.vscode/*
+.idea/
+.idea/*
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+*~
+
+# debug & logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
-# env files (keep all Firebase, Stitch & backend secrets out of git)
+# env files (strictly keep credentials, tokens & secrets out of Git)
 .env
 .env.*
 !.env.example
@@ -28,9 +46,11 @@ yarn-error.log*
 **/.env.*
 !**/.env.example
 
-# typescript
+# typescript & build caches
 **/*.tsbuildinfo
 **/next-env.d.ts
 
-# keep Stitch MCP API key out of git
+# credentials
+*.pem
+*.key
 .agents/plugins/stitch/mcp_config.json
