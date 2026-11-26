@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { EventItem, DigitalPass } from "@/lib/eventhub-data";
 import { useEventHub } from "@/context/EventHubContext";
+import { useAuth } from "@/context/AuthContext";
 import { QrCodeSvg } from "@/components/QrCodeSvg";
 import "@/app/register/register.css";
 
@@ -44,6 +45,7 @@ interface EventRegistrationFormProps {
 
 export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const { registerPass } = useEventHub();
 
   const maxMembers = event.maxTeamMembers || 3;
@@ -52,8 +54,8 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
   const [mode, setMode] = useState<"solo" | "team">(initialMode);
 
   // Solo fields
-  const [soloName, setSoloName] = useState("");
-  const [soloEmail, setSoloEmail] = useState("");
+  const [soloName, setSoloName] = useState(user?.displayName || "");
+  const [soloEmail, setSoloEmail] = useState(user?.email || "");
   const [soloEmailOtp, setSoloEmailOtp] = useState("");
   const [soloEmailOtpSent, setSoloEmailOtpSent] = useState(false);
   const [soloEmailTimer, setSoloEmailTimer] = useState(59);
@@ -65,8 +67,8 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
 
   // Team fields
   const [teamName, setTeamName] = useState("");
-  const [leaderName, setLeaderName] = useState("");
-  const [leaderEmail, setLeaderEmail] = useState("");
+  const [leaderName, setLeaderName] = useState(user?.displayName || "");
+  const [leaderEmail, setLeaderEmail] = useState(user?.email || "");
   const [leaderEmailOtp, setLeaderEmailOtp] = useState("");
   const [leaderEmailOtpSent, setLeaderEmailOtpSent] = useState(false);
   const [leaderEmailTimer, setLeaderEmailTimer] = useState(59);
@@ -75,6 +77,17 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
   const [leaderPhoneOtp, setLeaderPhoneOtp] = useState("");
   const [leaderPhoneOtpSent, setLeaderPhoneOtpSent] = useState(false);
   const [leaderPhoneTimer, setLeaderPhoneTimer] = useState(59);
+
+  useEffect(() => {
+    if (user?.displayName) {
+      if (!soloName) setSoloName(user.displayName);
+      if (!leaderName) setLeaderName(user.displayName);
+    }
+    if (user?.email) {
+      if (!soloEmail) setSoloEmail(user.email);
+      if (!leaderEmail) setLeaderEmail(user.email);
+    }
+  }, [user]);
 
   const [teamMembers, setTeamMembers] = useState<TeamMemberField[]>([
     { id: "m-1", name: "", phone: "", otpSent: false, timer: 59 },
@@ -115,7 +128,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
     setErrorMessage("");
     setSoloEmailOtpSent(true);
     setSoloEmailTimer(59);
-    setSoloEmailOtp("481902");
+    setSoloEmailOtp("");
   };
 
   const handleSendSoloPhoneOtp = () => {
@@ -126,7 +139,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
     setErrorMessage("");
     setSoloPhoneOtpSent(true);
     setSoloPhoneTimer(59);
-    setSoloPhoneOtp("628104");
+    setSoloPhoneOtp("");
   };
 
   const handleSendLeaderEmailOtp = () => {
@@ -137,7 +150,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
     setErrorMessage("");
     setLeaderEmailOtpSent(true);
     setLeaderEmailTimer(59);
-    setLeaderEmailOtp("391827");
+    setLeaderEmailOtp("");
   };
 
   const handleSendLeaderPhoneOtp = () => {
@@ -148,7 +161,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
     setErrorMessage("");
     setLeaderPhoneOtpSent(true);
     setLeaderPhoneTimer(59);
-    setLeaderPhoneOtp("918274");
+    setLeaderPhoneOtp("");
   };
 
   const handleSendMemberOtp = (id: string) => {
@@ -272,11 +285,11 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
               <h1 className="eh-top-title">{event.title}</h1>
               <div className="eh-top-meta">
                 <span>
-                  <Calendar className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                  <Calendar className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                   {event.dateFull}
                 </span>
                 <span>
-                  <MapPin className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                  <MapPin className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                   {event.venue}
                 </span>
               </div>
@@ -686,7 +699,7 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
           {/* Right Column: Event Summary Card */}
           <div className="eh-reg-summarycard">
             <div className="eh-summary-head">
-              <Ticket className="w-4 h-4" style={{ color: "#c084fc" }} />
+              <Ticket className="w-4 h-4" style={{ color: "#d97706" }} />
               <span>Event Summary</span>
             </div>
 
@@ -701,11 +714,11 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
               <h3 className="eh-summary-title">{event.title}</h3>
               <div className="eh-summary-meta">
                 <span>
-                  <Calendar className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                  <Calendar className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                   {event.dateFull}
                 </span>
                 <span>
-                  <MapPin className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                  <MapPin className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                   {event.venue}
                 </span>
               </div>
@@ -932,18 +945,18 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
                       fontFamily: "monospace",
                       fontSize: 16,
                       fontWeight: 700,
-                      color: "#c084fc",
+                      color: "#d97706",
                       letterSpacing: "0.08em",
                     }}
                   >
                     {issuedPass.passCode}
                   </span>
-                  <div style={{ fontSize: 12, color: "#34d399", marginTop: 4, fontWeight: 600 }}>
+                  <div style={{ fontSize: 12, color: "#10b981", marginTop: 4, fontWeight: 600 }}>
                     {issuedPass.teamName && issuedPass.teamName !== "Solo Entrant"
                       ? "1 Unified Team QR Pass • Displayed to Team Leader Only"
                       : "Unique Solo QR Pass • Signed Token (No PII)"}
                   </div>
-                  <div style={{ fontSize: 11.5, color: "#9f9cb8", marginTop: 4 }}>
+                  <div style={{ fontSize: 11.5, color: "#a8a29e", marginTop: 4 }}>
                     Download as PNG or PDF now — QR codes are not sent via email.
                   </div>
                 </div>
@@ -952,8 +965,8 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
               {/* Event details summary */}
               <div
                 style={{
-                  background: "rgba(18, 13, 36, 0.6)",
-                  border: "1px solid rgba(168, 85, 247, 0.2)",
+                  background: "rgba(28, 25, 20, 0.6)",
+                  border: "1px solid rgba(245, 158, 11, 0.25)",
                   borderRadius: 14,
                   padding: "16px",
                   display: "flex",
@@ -963,17 +976,17 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ color: "#9f9cb8" }}>Event:</span>
+                  <span style={{ color: "#a8a29e" }}>Event:</span>
                   <strong style={{ color: "#fff", textAlign: "right" }}>{issuedPass.eventTitle}</strong>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span style={{ color: "#9f9cb8" }}>Attendee / Leader:</span>
+                  <span style={{ color: "#a8a29e" }}>Attendee / Leader:</span>
                   <span style={{ color: "#fff" }}>{issuedPass.holderName}</span>
                 </div>
                 {issuedPass.teamName && issuedPass.teamName !== "Solo Entrant" && (
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#9f9cb8" }}>Team:</span>
-                    <span style={{ color: "#c084fc", fontWeight: 600 }}>{issuedPass.teamName}</span>
+                    <span style={{ color: "#a8a29e" }}>Team:</span>
+                    <span style={{ color: "#d97706", fontWeight: 600 }}>{issuedPass.teamName}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between" }}>

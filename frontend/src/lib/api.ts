@@ -1,4 +1,4 @@
-import { EventItem, DigitalPass, ScanLogEntry, AttendeeRecord, INITIAL_EVENTS, INITIAL_PASSES, INITIAL_SCAN_LOGS, INITIAL_ATTENDEES } from "./eventhub-data";
+import { EventItem, DigitalPass, ScanLogEntry, AttendeeRecord, NotificationItem, INITIAL_EVENTS, INITIAL_PASSES, INITIAL_SCAN_LOGS, INITIAL_ATTENDEES, INITIAL_NOTIFICATIONS } from "./eventhub-data";
 
 /**
  * Resolves the API URL for both server-side and client-side requests:
@@ -62,13 +62,20 @@ export const api = {
     return safeFetch<EventItem | null>(`/events/${id}`, { method: "GET" }, INITIAL_EVENTS.find((e) => e.id === id || e.trackCode === id) || null);
   },
 
+  async createEvent(data: Partial<EventItem>): Promise<EventItem> {
+    return safeFetch<EventItem>("/events", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
   // Passes
   async getPasses(email?: string, userUid?: string): Promise<DigitalPass[]> {
     const params = new URLSearchParams();
     if (email) params.append("email", email);
     if (userUid) params.append("userUid", userUid);
     const qs = params.toString() ? `?${params.toString()}` : "";
-    return safeFetch<DigitalPass[]>(`/passes${qs}`, { method: "GET" }, INITIAL_PASSES);
+    return safeFetch<DigitalPass[]>(`/passes${qs}`, { method: "GET" }, []);
   },
 
   async createPass(data: Partial<DigitalPass> & { eventTitle: string; holderName: string; holderEmail: string }): Promise<DigitalPass> {
@@ -80,10 +87,10 @@ export const api = {
 
   // Scans & Verification (Volunteers)
   async getScanLogs(): Promise<ScanLogEntry[]> {
-    return safeFetch<ScanLogEntry[]>("/scans", { method: "GET" }, INITIAL_SCAN_LOGS);
+    return safeFetch<ScanLogEntry[]>("/scans", { method: "GET" }, []);
   },
 
-  async scanPass(passCode: string, gateLocation = "Gate 1"): Promise<{ success: boolean; status: string; message: string }> {
+  async scanPass(passCode: string, gateLocation = "Gate 1"): Promise<{ success: boolean; status: string; message: string; pass?: DigitalPass }> {
     return safeFetch("/scans", {
       method: "POST",
       body: JSON.stringify({ passCode, gateLocation }),
@@ -96,7 +103,14 @@ export const api = {
     if (event && event !== "all") params.append("event", event);
     if (status && status !== "all") params.append("status", status);
     const qs = params.toString() ? `?${params.toString()}` : "";
-    return safeFetch<AttendeeRecord[]>(`/attendees${qs}`, { method: "GET" }, INITIAL_ATTENDEES);
+    return safeFetch<AttendeeRecord[]>(`/attendees${qs}`, { method: "GET" }, []);
+  },
+
+  async updateAttendeeStatus(passId: string, status: string, gateLocation?: string): Promise<{ success: boolean; data?: AttendeeRecord }> {
+    return safeFetch(`/attendees/${encodeURIComponent(passId)}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, gateLocation }),
+    });
   },
 
   // Users & Sync
@@ -109,12 +123,63 @@ export const api = {
 
   async getDashboardStats() {
     return safeFetch("/users/stats/overview", { method: "GET" }, {
-      totalEvents: 7,
-      totalPasses: 248,
-      checkedInCount: 142,
-      pendingCount: 106,
-      totalScans: 198,
-      attendanceRate: "57%",
+      totalEvents: 0,
+      totalPasses: 0,
+      checkedInCount: 0,
+      pendingCount: 0,
+      totalScans: 0,
+      attendanceRate: "0%",
+    });
+  },
+
+  // Notifications
+  async getNotifications(userUid?: string, role?: string, email?: string): Promise<{ data: NotificationItem[]; unreadCount: number }> {
+    const params = new URLSearchParams();
+    if (userUid) params.append("userUid", userUid);
+    if (role) params.append("role", role);
+    if (email) params.append("email", email);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    return safeFetch<{ data: NotificationItem[]; unreadCount: number }>(
+      `/notifications${qs}`,
+      { method: "GET" },
+      {
+        data: [],
+        unreadCount: 0,
+      }
+    );
+  },
+
+  async createNotification(data: Partial<NotificationItem>): Promise<NotificationItem> {
+    return safeFetch<NotificationItem>("/notifications", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async markNotificationAsRead(id: string, userUid?: string): Promise<{ success: boolean }> {
+    return safeFetch<{ success: boolean }>(`/notifications/${id}/read`, {
+      method: "PATCH",
+      body: JSON.stringify({ userUid }),
+    });
+  },
+
+  async markAllNotificationsAsRead(userUid?: string, role?: string): Promise<{ success: boolean }> {
+    return safeFetch<{ success: boolean }>("/notifications/read-all", {
+      method: "PATCH",
+      body: JSON.stringify({ userUid, role }),
+    });
+  },
+
+  async deleteNotification(id: string): Promise<{ success: boolean }> {
+    return safeFetch<{ success: boolean }>(`/notifications/${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  async clearReadNotifications(userUid?: string): Promise<{ success: boolean }> {
+    return safeFetch<{ success: boolean }>("/notifications/clear-read", {
+      method: "DELETE",
+      body: JSON.stringify({ userUid }),
     });
   },
 };

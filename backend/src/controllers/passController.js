@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { Pass } from "../models/Pass.js";
 import { Event } from "../models/Event.js";
 import { Attendee } from "../models/Attendee.js";
+import { Notification } from "../models/Notification.js";
 
 // GET /api/passes
 export const getPasses = async (req, res, next) => {
@@ -123,10 +124,29 @@ export const createPass = async (req, res, next) => {
       { upsert: true, new: true }
     );
 
-    // Increment registered count if eventId exists
-    if (eventId) {
-      await Event.findByIdAndUpdate(eventId, { $inc: { registeredCount: 1 } }).catch(() => null);
+    // Increment registered count if eventId or eventTitle exists
+    if (eventId || eventTitle) {
+      await Event.findOneAndUpdate(
+        {
+          $or: [
+            ...(eventId ? [{ _id: eventId }, { trackCode: eventId }] : []),
+            ...(eventTitle ? [{ title: eventTitle }] : []),
+          ],
+        },
+        { $inc: { registeredCount: 1 } }
+      ).catch(() => null);
     }
+
+    // Automatically create a notification for the pass holder
+    await Notification.create({
+      recipient: userUid || holderEmail.toLowerCase(),
+      title: `Pass Confirmed: ${eventTitle}`,
+      message: `Your fast-track entry pass (${passCode}) is active. Gates open at ${pass.gateTime} at ${venue}.`,
+      type: "pass",
+      category: "registration",
+      link: "/passes",
+      metadata: { passCode, eventId, eventTitle },
+    }).catch((err) => console.error("Notification creation error:", err));
 
     res.status(201).json({ success: true, data: pass });
   } catch (error) {

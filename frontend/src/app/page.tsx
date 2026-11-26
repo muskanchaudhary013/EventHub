@@ -167,10 +167,10 @@ export default function EventDiscoveryPage() {
         >
           <defs>
             <linearGradient id="ehArc" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a855f7" stopOpacity="0" />
-              <stop offset="45%" stopColor="#c084fc" stopOpacity="0.65" />
-              <stop offset="85%" stopColor="#38bdf8" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0" />
+              <stop offset="45%" stopColor="#fbbf24" stopOpacity="0.65" />
+              <stop offset="85%" stopColor="#d97706" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#d97706" stopOpacity="0" />
             </linearGradient>
           </defs>
           <path
@@ -314,11 +314,11 @@ export default function EventDiscoveryPage() {
                           <h3>{activeEvent.title}</h3>
                           <div className="eh-meta-inline">
                             <span>
-                              <Calendar className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                              <Calendar className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                               {activeEvent.dateFull}
                             </span>
                             <span>
-                              <MapPin className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                              <MapPin className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                               {activeEvent.venue}
                             </span>
                           </div>
@@ -328,10 +328,10 @@ export default function EventDiscoveryPage() {
                         <div className="eh-featured-footer">
                           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                             <span className="eh-seats-label">
-                              <Users className="w-4 h-4" style={{ color: "#c084fc" }} />
+                              <Users className="w-4 h-4" style={{ color: "#d97706" }} />
                               {activeEvent.registeredCount}/{activeEvent.capacityCount} Seats
                             </span>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: "#c084fc" }}>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#d97706" }}>
                               Fee: {activeEvent.feeLabel}
                             </span>
                           </div>
@@ -483,11 +483,11 @@ export default function EventDiscoveryPage() {
                     <h3>{e.title}</h3>
                     <div className="eh-card-meta">
                       <span>
-                        <Calendar className="w-3.5 h-3.5" style={{ color: "#a855f7" }} />
+                        <Calendar className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                         {e.dateFull}
                       </span>
                       <span>
-                        <MapPin className="w-3.5 h-3.5" style={{ color: "#a855f7" }} />
+                        <MapPin className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                         {e.venue}
                       </span>
                     </div>
@@ -495,10 +495,10 @@ export default function EventDiscoveryPage() {
                     <div className="eh-card-foot">
                       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                         <span className="eh-seats-label" style={{ fontSize: 12 }}>
-                          <Users className="w-3.5 h-3.5" style={{ color: "#a855f7" }} />
+                          <Users className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                           {e.registeredCount}/{e.capacityCount} Seats
                         </span>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#c084fc" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#d97706" }}>
                           {e.feeLabel}
                         </span>
                       </div>

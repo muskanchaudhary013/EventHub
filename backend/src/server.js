@@ -64,13 +64,27 @@ app.use(errorHandler);
 
 // Start local HTTP listener only outside Vercel serverless runtime
 if (!process.env.VERCEL) {
-  const startServer = async () => {
-    await connectDB();
-
-    app.listen(PORT, () => {
+  const startServer = () => {
+    const server = app.listen(PORT, () => {
       console.log(`[EventHub] Backend running in ${process.env.NODE_ENV || "development"} mode on http://localhost:${PORT}`);
       console.log(`[EventHub] Health Check: http://localhost:${PORT}/api/health`);
     });
+
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.error(`\n❌ [EventHub Error] Port ${PORT} is already in use.`);
+        if (PORT === 5000 || PORT === "5000") {
+          console.error(
+            `💡 [macOS Tip] Port 5000 is occupied by Apple's AirPlay Receiver (ControlCenter).\n` +
+            `   - To free port 5000: System Settings > General > AirDrop & AirPlay > Turn off 'AirPlay Receiver'.\n` +
+            `   - Or switch to port 5001: Set PORT=5001 in backend/.env and NEXT_PUBLIC_API_URL=http://localhost:5001/api in frontend/.env.local.\n`
+          );
+        }
+      }
+    });
+
+    // Establish initial DB connection in background
+    connectDB();
   };
 
   startServer();

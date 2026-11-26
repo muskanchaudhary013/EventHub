@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let cachedPromise = null;
+let lastAttempt = 0;
+const RETRY_INTERVAL_MS = 10000;
 
 export const connectDB = async () => {
   if (mongoose.connection.readyState === 1) {
@@ -14,10 +16,17 @@ export const connectDB = async () => {
     return cachedPromise;
   }
 
+  // Throttle reconnection attempts so incoming HTTP requests don't hang if Atlas is unreachable
+  const now = Date.now();
+  if (now - lastAttempt < RETRY_INTERVAL_MS) {
+    return null;
+  }
+  lastAttempt = now;
+
   const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/eventhub";
   cachedPromise = mongoose
     .connect(uri, {
-      serverSelectionTimeoutMS: 15000,
+      serverSelectionTimeoutMS: 5000,
     })
     .then((conn) => {
       console.log(`[EventHub] MongoDB Connected: ${conn.connection.host}`);

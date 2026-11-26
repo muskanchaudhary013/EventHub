@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { ScanLog } from "../models/ScanLog.js";
 import { Pass } from "../models/Pass.js";
 import { Attendee } from "../models/Attendee.js";
+import { Notification } from "../models/Notification.js";
 
 // GET /api/scans
 export const getScanLogs = async (req, res, next) => {
@@ -90,6 +91,16 @@ export const logScan = async (req, res, next) => {
         gateLocation,
       });
 
+      await Notification.create({
+        recipient: "role:organizer",
+        title: "Security Alert: Invalid Pass Scan",
+        message: `Unregistered or tampered QR pass (${lookupPassCode}) attempted at ${gateLocation}.`,
+        type: "urgent",
+        category: "security",
+        link: "/dashboard/volunteer",
+        metadata: { passCode: lookupPassCode, gateLocation },
+      }).catch(() => null);
+
       return res.status(404).json({
         success: false,
         status: "Invalid",
@@ -117,6 +128,16 @@ export const logScan = async (req, res, next) => {
         status: "Duplicate",
         gateLocation,
       });
+
+      await Notification.create({
+        recipient: "role:organizer",
+        title: "Duplicate Gate Entry Alert",
+        message: `Duplicate scan detected for ${pass.holderName} (${pass.passCode}) at ${gateLocation}. First check-in was at ${originalTimestamp}.`,
+        type: "warning",
+        category: "security",
+        link: "/dashboard/organizer",
+        metadata: { passCode: pass.passCode, gateLocation },
+      }).catch(() => null);
 
       return res.status(409).json({
         success: false,
@@ -155,6 +176,28 @@ export const logScan = async (req, res, next) => {
         gateLocation,
       }
     ).catch(() => null);
+
+    // Notify attendee of successful gate check-in
+    await Notification.create({
+      recipient: pass.userUid || pass.holderEmail.toLowerCase(),
+      title: "Gate Check-In Confirmed",
+      message: `Access granted for ${pass.eventTitle} at ${gateLocation}. Have a great event!`,
+      type: "gate",
+      category: "gate_scan",
+      link: "/passes",
+      metadata: { passCode: pass.passCode, gateLocation, time: nowTime },
+    }).catch(() => null);
+
+    // Notify organizers
+    await Notification.create({
+      recipient: "role:organizer",
+      title: `Gate Activity: ${pass.holderName}`,
+      message: `Checked in for ${pass.eventTitle} at ${gateLocation} (${nowTime}).`,
+      type: "info",
+      category: "gate_scan",
+      link: "/dashboard/organizer",
+      metadata: { passCode: pass.passCode, gateLocation },
+    }).catch(() => null);
 
     res.json({
       success: true,

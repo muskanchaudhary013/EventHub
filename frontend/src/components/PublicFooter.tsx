@@ -37,11 +37,11 @@ export function PublicFooter() {
           <div>
             <h4>Contact Us</h4>
             <div className="eh-contact-row">
-              <Mail className="w-4 h-4" style={{ color: "#c084fc", flexShrink: 0 }} />
+              <Mail className="w-4 h-4" style={{ color: "#f59e0b", flexShrink: 0 }} />
               <span>eventhub@hack4tech.in</span>
             </div>
             <div className="eh-contact-row">
-              <MapPin className="w-4 h-4" style={{ color: "#c084fc", flexShrink: 0 }} />
+              <MapPin className="w-4 h-4" style={{ color: "#f59e0b", flexShrink: 0 }} />
               <span>GLA University, Mathura</span>
             </div>
           </div>

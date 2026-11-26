@@ -147,9 +147,9 @@ export default function FaqPage() {
                           width: 34,
                           height: 34,
                           borderRadius: 10,
-                          background: "rgba(139, 92, 246, 0.2)",
-                          border: "1px solid rgba(192, 132, 252, 0.35)",
-                          color: "#d8b4fe",
+                          background: "rgba(245, 158, 11, 0.15)",
+                          border: "1px solid rgba(245, 158, 11, 0.35)",
+                          color: "#d97706",
                           display: "inline-flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -185,7 +185,7 @@ export default function FaqPage() {
               </div>
               <div>
                 <strong>Already registered? Access your digital QR pass</strong>
-                <div style={{ fontSize: 13, color: "#cfc9e4", marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
                   All passes work offline with cryptographic signature verification.
                 </div>
               </div>

@@ -50,13 +50,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="light"
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable}`}
     >
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('eh-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('eh-theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');}else{document.documentElement.setAttribute('data-theme','light');}}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
           }}
         />
       </head>

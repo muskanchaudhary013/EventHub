@@ -99,12 +99,12 @@ export function QrCodeSvg({
               margin: 0 auto;
               background: #ffffff;
               border-radius: 16px;
-              border: 2px solid #7c3aed;
+              border: 2px solid #f59e0b;
               box-shadow: 0 10px 25px rgba(0,0,0,0.1);
               overflow: hidden;
             }
             .pass-header {
-              background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+              background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
               color: #ffffff;
               padding: 24px;
               text-align: center;
@@ -126,7 +126,7 @@ export function QrCodeSvg({
               font-size: 20px;
               font-weight: 700;
               letter-spacing: 2px;
-              color: #7c3aed;
+              color: #d97706;
               margin-bottom: 20px;
             }
             .info-table {

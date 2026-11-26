@@ -3,13 +3,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, User, X } from "lucide-react";
+import { LogOut, Menu, User, X } from "lucide-react";
 import { getDashboardPath, useAuth } from "@/context/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { NotificationCenter } from "@/components/NotificationCenter";
 
 export function PublicHeader() {
   const pathname = usePathname();
-  const { user, role } = useAuth();
+  const { user, role, signOut } = useAuth();
   const [isHeaderHidden, setIsHeaderHidden] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -72,6 +73,7 @@ export function PublicHeader() {
 
         <div className="eh-header-actions">
           <ThemeToggle />
+          <NotificationCenter buttonClassName="eh-icon-btn" />
           <Link
             href={dashboardHref}
             className="eh-icon-btn"
@@ -80,9 +82,29 @@ export function PublicHeader() {
           >
             <User className="w-4 h-4" />
           </Link>
-          <Link className="eh-signin-btn" href={dashboardHref}>
-            {user ? "Dashboard" : "Sign In"}
-          </Link>
+
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Link className="eh-signin-btn" href={dashboardHref}>
+                Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="eh-icon-btn"
+                aria-label="Log Out"
+                title="Log Out"
+                style={{ cursor: "pointer" }}
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <Link className="eh-signin-btn" href="/login">
+              Sign In
+            </Link>
+          )}
+
           <button
             type="button"
             className="eh-icon-btn eh-mobile-toggle"
@@ -97,29 +119,55 @@ export function PublicHeader() {
       {mobileOpen && (
         <div
           style={{
-            borderTop: "1px solid rgba(168,85,247,0.18)",
-            background: "rgba(11, 8, 22, 0.98)",
+            borderTop: "1px solid rgba(245,158,11,0.2)",
+            background: "var(--bg-2, #ffffff)",
             padding: "16px 24px 22px",
             display: "flex",
             flexDirection: "column",
             gap: 14,
           }}
         >
-          <Link href="/" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/" ? 700 : 500, color: "#fff" }}>
+          <Link href="/" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/" ? 700 : 500, color: "inherit" }}>
             Discover
           </Link>
-          <Link href="/#events" onClick={() => setMobileOpen(false)} style={{ color: "#c4bddb" }}>
+          <Link href="/#events" onClick={() => setMobileOpen(false)} style={{ color: "var(--muted, #57534e)" }}>
             Events
           </Link>
-          <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} style={{ color: "#c4bddb" }}>
+          <Link href="/#how-it-works" onClick={() => setMobileOpen(false)} style={{ color: "var(--muted, #57534e)" }}>
             How It Works
           </Link>
-          <Link href="/passes" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/passes" ? 700 : 500, color: pathname === "/passes" ? "#fff" : "#c4bddb" }}>
+          <Link href="/passes" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/passes" ? 700 : 500, color: "inherit" }}>
             My Passes
           </Link>
-          <Link href="/faq" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/faq" ? 700 : 500, color: pathname === "/faq" ? "#fff" : "#c4bddb" }}>
+          <Link href="/faq" onClick={() => setMobileOpen(false)} style={{ fontWeight: pathname === "/faq" ? 700 : 500, color: "inherit" }}>
             FAQs
           </Link>
+          {user && (
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                signOut();
+              }}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                background: "none",
+                border: 0,
+                color: "#ef4444",
+                fontWeight: 600,
+                cursor: "pointer",
+                padding: "8px 0 0",
+                fontSize: 14,
+                borderTop: "1px solid rgba(245,158,11,0.15)",
+                width: "fit-content",
+              }}
+            >
+              <LogOut className="w-4 h-4" />
+              Log Out ({user.displayName || user.email})
+            </button>
+          )}
         </div>
       )}
     </div>

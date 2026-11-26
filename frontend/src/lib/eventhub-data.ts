@@ -93,6 +93,38 @@ export interface AttendeeRecord {
   gateLocation: string;
 }
 
+export type NotificationType =
+  | "info"
+  | "success"
+  | "warning"
+  | "urgent"
+  | "pass"
+  | "gate"
+  | "event";
+
+export type NotificationCategory =
+  | "general"
+  | "registration"
+  | "gate_scan"
+  | "announcement"
+  | "security"
+  | "system";
+
+export interface NotificationItem {
+  id: string;
+  recipient?: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  category: NotificationCategory;
+  link?: string;
+  read: boolean;
+  metadata?: Record<string, any>;
+  createdAt: string;
+}
+
+export const INITIAL_NOTIFICATIONS: NotificationItem[] = [];
+
 export const BRAND_LOGO_URL = "/logo.png";
 
 export const SCANNER_BG_URL =
@@ -121,7 +153,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 3,
     prizeLabel: "Prize Pool: ₹1,50,000",
     prizeTone: "primary",
-    registeredCount: 120,
+    registeredCount: 0,
     capacityCount: 200,
     quotaLabel: "Allocation Manifest",
     quotaUnit: "Seats",
@@ -161,7 +193,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 1,
     prizeLabel: "Verified Certificate",
     prizeTone: "tertiary",
-    registeredCount: 80,
+    registeredCount: 0,
     capacityCount: 100,
     quotaLabel: "Auditorium Seats",
     quotaUnit: "Seats",
@@ -199,7 +231,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 2,
     prizeLabel: "Badge & Swag",
     prizeTone: "tertiary",
-    registeredCount: 50,
+    registeredCount: 0,
     capacityCount: 60,
     quotaLabel: "Lab Capacity",
     quotaUnit: "Seats",
@@ -237,7 +269,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 2,
     prizeLabel: "Prize Pool: ₹50,000",
     prizeTone: "primary",
-    registeredCount: 45,
+    registeredCount: 0,
     capacityCount: 100,
     quotaLabel: "Arena Slots",
     quotaUnit: "Seats",
@@ -275,7 +307,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 4,
     prizeLabel: "Prize Pool: $12,500",
     prizeTone: "tertiary",
-    registeredCount: 186,
+    registeredCount: 0,
     capacityCount: 200,
     quotaLabel: "Allocation Manifest",
     quotaUnit: "Hacker Teams Accreditated",
@@ -315,7 +347,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 4,
     prizeLabel: "Prize: $5,000",
     prizeTone: "primary",
-    registeredCount: 29,
+    registeredCount: 0,
     capacityCount: 32,
     quotaLabel: "Arena Quota",
     quotaUnit: "Bots Registered",
@@ -352,7 +384,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 2,
     prizeLabel: "Prize: $3,200",
     prizeTone: "tertiary",
-    registeredCount: 92,
+    registeredCount: 0,
     capacityCount: 100,
     quotaLabel: "Seats Registered",
     quotaUnit: "Designers",
@@ -389,7 +421,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 6,
     prizeLabel: "Free Student Pass",
     prizeTone: "neutral",
-    registeredCount: 128,
+    registeredCount: 0,
     capacityCount: 150,
     quotaLabel: "General Admission",
     quotaUnit: "Registered",
@@ -426,7 +458,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 1,
     prizeLabel: "Prize: $2,500",
     prizeTone: "tertiary",
-    registeredCount: 44,
+    registeredCount: 0,
     capacityCount: 60,
     quotaLabel: "Lab Quota",
     quotaUnit: "Registered",
@@ -463,7 +495,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 6,
     prizeLabel: "Prize: $4,000",
     prizeTone: "primary",
-    registeredCount: 14,
+    registeredCount: 0,
     capacityCount: 16,
     quotaLabel: "Team Slots",
     quotaUnit: "Teams Checked In",
@@ -500,7 +532,7 @@ export const INITIAL_EVENTS: EventItem[] = [
     maxTeamMembers: 1,
     prizeLabel: "Certificate Issued",
     prizeTone: "tertiary",
-    registeredCount: 410,
+    registeredCount: 0,
     capacityCount: 500,
     quotaLabel: "Auditorium Seats",
     quotaUnit: "RSVPs",
@@ -520,182 +552,6 @@ export const INITIAL_EVENTS: EventItem[] = [
   },
 ];
 
-export const INITIAL_PASSES: DigitalPass[] = [
-  {
-    id: "pass-1",
-    passCode: "EH-2026-HCK-9481",
-    eventTitle: "HackCampus 2026: 36-Hour AI Hackathon",
-    trackLabel: "AI / Web3 Track",
-    shortTabLabel: "HackCampus 2026 (Active)",
-    dateRange: "Dec 11 - 13, 2026",
-    gateTime: "Gates open 08:30 AM",
-    venue: "Turing Innovation Hall",
-    teamName: "Team SyntaxErrors",
-    booth: "Booth B-14",
-    tierLabel: "3 Registered Engineers · Hackathon Tier A",
-    holderName: "Alex Chen",
-    holderEmail: "alex.chen@campus.edu",
-    teammates: [
-      { name: "Maya Patel", role: "UI/UX Lead", icon: "palette" },
-      { name: "Jordan Rivera", role: "Fullstack Eng", icon: "terminal" },
-    ],
-    countdownLabel: "Starts in 14d 22h",
-    sigHash: "sha256:7f49a3c9e...88c2f10b",
-    status: "Confirmed",
-    dotColor: "coral",
-  },
-  {
-    id: "pass-2",
-    passCode: "EH-2026-RBW-1102",
-    eventTitle: "RoboWars: Combat Robotics Championship",
-    trackLabel: "Robotics Hardware",
-    shortTabLabel: "RoboWars 2026",
-    dateRange: "Dec 11, 2026",
-    gateTime: "Pit opens 01:15 PM",
-    venue: "Arena Mech Bay 3",
-    teamName: "Solo Combatant",
-    booth: "Bay M-03",
-    tierLabel: "Solo Combatant · Mech Inspection Cleared",
-    holderName: "Alex Chen",
-    holderEmail: "alex.chen@campus.edu",
-    teammates: [],
-    countdownLabel: "Starts in 15d 04h",
-    sigHash: "sha256:3d18c7a4e...41b9a22f",
-    status: "Check-In Ready",
-    dotColor: "emerald",
-  },
-];
-
-export const INITIAL_SCAN_LOGS: ScanLogEntry[] = [
-  {
-    id: "scan-1",
-    time: "09:14:02",
-    attendee: "Alex Chen",
-    subtitle: "(Team SyntaxErrors)",
-    event: "HackCampus 2026",
-    passId: "EH-2026-HCK-9481",
-    status: "Valid",
-  },
-  {
-    id: "scan-2",
-    time: "09:13:41",
-    attendee: "Priya Sharma",
-    event: "Stanford AI Summit",
-    passId: "EH-2025-ENG-3190",
-    status: "Duplicate",
-  },
-  {
-    id: "scan-3",
-    time: "09:12:15",
-    attendee: "Marcus Brody",
-    event: "Robotics Arena V",
-    passId: "EH-2025-ROB-1102",
-    status: "Manual",
-  },
-  {
-    id: "scan-4",
-    time: "09:10:55",
-    attendee: "Jordan Rivera",
-    event: "Algorithmic Game Design",
-    passId: "EH-2025-DES-8114",
-    status: "Late",
-    lateMinutes: 10,
-  },
-  {
-    id: "scan-5",
-    time: "09:09:40",
-    attendee: "Elena Rostova",
-    subtitle: "(Faculty Advisor)",
-    event: "HackCampus 2025",
-    passId: "EH-2025-FAC-0042",
-    status: "Valid",
-  },
-];
-
-export const INITIAL_ATTENDEES: AttendeeRecord[] = [
-  {
-    id: "att-1",
-    passId: "EH-2025-HCK-9481",
-    initials: "AC",
-    name: "Alex Chen",
-    email: "alex.chen@campus.edu",
-    teamInfo: "Team: QuantumLeap (+2 teammates)",
-    event: "HackCampus 48h",
-    eventKey: "hackcampus",
-    track: "AI & Distributed Systems",
-    type: "Team",
-    typeLabel: "Team (3 pax)",
-    status: "Present",
-    statusLabel: "Present",
-    scanTime: "09:14 AM",
-    gateLocation: "Gate 2 (Turnstile B)",
-  },
-  {
-    id: "att-2",
-    passId: "EH-2025-RBW-2391",
-    initials: "MP",
-    name: "Maya Patel",
-    email: "maya.patel@campus.edu",
-    teamInfo: "Solo Participant",
-    event: "RoboWars Arena",
-    eventKey: "robowars",
-    track: "Heavyweight Combat",
-    type: "Solo",
-    typeLabel: "Solo",
-    status: "Late",
-    statusLabel: "Late (90m+)",
-    scanTime: "10:45 AM",
-    gateLocation: "Gate 4 (Admin Desk)",
-  },
-  {
-    id: "att-3",
-    passId: "EH-2025-PXC-7102",
-    initials: "JD",
-    name: "Jordan Diaz",
-    email: "jordan.diaz@campus.edu",
-    teamInfo: "Solo Participant",
-    event: "PixelCraft UI/UX",
-    eventKey: "pixelcraft",
-    track: "Design Marathon",
-    type: "Solo",
-    typeLabel: "Solo",
-    status: "Pending",
-    statusLabel: "Pending",
-    scanTime: "Unscanned",
-    gateLocation: "En route",
-  },
-  {
-    id: "att-4",
-    passId: "EH-2025-HCK-1102",
-    initials: "SK",
-    name: "Siddharth Kumar",
-    email: "skumar@campus.edu",
-    teamInfo: "Team: HyperCode (+3 teammates)",
-    event: "HackCampus 48h",
-    eventKey: "hackcampus",
-    track: "Web3 Infrastructure",
-    type: "Team",
-    typeLabel: "Team (4 pax)",
-    status: "Blocked",
-    statusLabel: "Scan Blocked",
-    scanTime: "09:21 AM (Duplicate)",
-    gateLocation: "Gate 1 • First seen 08:50",
-  },
-  {
-    id: "att-5",
-    passId: "EH-2025-CYB-4089",
-    initials: "EW",
-    name: "Elena Watson",
-    email: "elena.watson@campus.edu",
-    teamInfo: "Solo Participant",
-    event: "CyberPulse CTF",
-    eventKey: "cyberpulse",
-    track: "Binary Exploitation",
-    type: "Solo",
-    typeLabel: "Solo",
-    status: "Present",
-    statusLabel: "Present",
-    scanTime: "08:44 AM",
-    gateLocation: "Gate 3 (East Access)",
-  },
-];
+export const INITIAL_PASSES: DigitalPass[] = [];
+export const INITIAL_SCAN_LOGS: ScanLogEntry[] = [];
+export const INITIAL_ATTENDEES: AttendeeRecord[] = [];

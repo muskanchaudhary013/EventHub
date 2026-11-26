@@ -39,37 +39,36 @@ type ScanResultState = "valid" | "duplicate" | "invalid" | "late";
 
 export default function VolunteerDashboardPage() {
   const { user } = useAuth();
-  const { scanLogs, passes, checkInPass, addScanLog, undoLatestScan } = useEventHub();
+  const { scanLogs, passes, checkInPass, undoLatestScan } = useEventHub();
 
   const [scanState, setScanState] = useState<ScanResultState>("valid");
   const [wedgeMode, setWedgeMode] = useState(true);
   const [torchOn, setTorchOn] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
   const [camFlipped, setCamFlipped] = useState(false);
-  const [manualCode, setManualCode] = useState("EH-2026-HCK-9481");
-  const [shiftCount, setShiftCount] = useState(418);
+  const [manualCode, setManualCode] = useState("");
   const [undoSeconds, setUndoSeconds] = useState(10);
   const [bannerToast, setBannerToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
-  const [duplicateInfo, setDuplicateInfo] = useState({
-    passId: "EH-2026-ENG-3190",
-    holder: "Priya Sharma",
-    time: "08:42:19 AM",
-    gate: "Gate 1",
-  });
-  const [invalidInfo, setInvalidInfo] = useState({
-    token: "FORGED-QR-0000",
-    reason: "Invalid or unauthorized registration: forged, expired, or unregistered QR code.",
-  });
-  const [lastScannedAttendee, setLastScannedAttendee] = useState({
-    name: "Alex Chen",
-    role: "Lead Hacker",
-    team: "Team SyntaxErrors • Table #B-14",
-    passId: "EH-2026-HCK-9481",
-    track: "HackCampus 2026",
-    perks: "Valid & Verified Registration • Access Granted",
-    time: "09:14:02 AM",
-  });
+  const [duplicateInfo, setDuplicateInfo] = useState<{
+    passId: string;
+    holder: string;
+    time: string;
+    gate: string;
+  } | null>(null);
+  const [invalidInfo, setInvalidInfo] = useState<{
+    token: string;
+    reason: string;
+  } | null>(null);
+  const [lastScannedAttendee, setLastScannedAttendee] = useState<{
+    name: string;
+    role: string;
+    team: string;
+    passId: string;
+    track: string;
+    perks: string;
+    time: string;
+  } | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -92,70 +91,6 @@ export default function VolunteerDashboardPage() {
     setTimeout(() => setBannerToast(null), 2800);
   };
 
-  const triggerSimulated = (next: ScanResultState) => {
-    const now = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-    setScanState(next);
-    setUndoSeconds(10);
-
-    if (next === "valid") {
-      setShiftCount((c) => Math.min(650, c + 1));
-      setLastScannedAttendee({
-        name: "Alex Chen",
-        role: "Lead Hacker",
-        team: "Team SyntaxErrors • Table #B-14",
-        passId: "EH-2025-HCK-9481",
-        track: "HackCampus 2025",
-        perks: "Full Access Pass + Food Token",
-        time: now,
-      });
-      addScanLog({
-        id: `scan-${Date.now()}`,
-        time: now.replace(/\s?[AP]M/, ""),
-        attendee: "Alex Chen",
-        subtitle: "(Team SyntaxErrors)",
-        event: "HackCampus 2025",
-        passId: "EH-2025-HCK-9481",
-        status: "Valid",
-      });
-    } else if (next === "duplicate") {
-      setDuplicateInfo({
-        passId: "EH-2026-ENG-3190",
-        holder: "Priya Sharma",
-        time: "08:42:19 AM",
-        gate: "Gate 1",
-      });
-      addScanLog({
-        id: `scan-${Date.now()}`,
-        time: now.replace(/\s?[AP]M/, ""),
-        attendee: "Priya Sharma",
-        event: "Stanford AI Summit",
-        passId: "EH-2026-ENG-3190",
-        status: "Duplicate",
-      });
-    } else if (next === "invalid") {
-      setInvalidInfo({
-        token: "EH-FORGED-9999",
-        reason:
-          "Cryptographic signature check failed. Forged, expired, or unregistered QR code.",
-      });
-      showToast("Blocked invalid / forged QR token");
-    } else {
-      addScanLog({
-        id: `scan-${Date.now()}`,
-        time: now.replace(/\s?[AP]M/, ""),
-        attendee: "Jordan Rivera",
-        event: "Algorithmic Game Design",
-        passId: "EH-2026-DES-8114",
-        status: "Late",
-        lateMinutes: 14,
-      });
-    }
-  };
-
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleaned = manualCode.trim();
@@ -166,23 +101,23 @@ export default function VolunteerDashboardPage() {
       second: "2-digit",
     });
 
-    const verification = checkInPass(cleaned, "Gate 2 Turing Hall");
+    const verification = checkInPass(cleaned, "Gate 1 Turing Hall");
     setUndoSeconds(10);
 
     if (verification.status === "granted" && verification.pass) {
       const p = verification.pass;
       setScanState("valid");
-      setShiftCount((c) => Math.min(650, c + 1));
       setLastScannedAttendee({
         name: p.holderName,
-        role: p.teamName && p.teamName !== "Solo Entrant" ? "Team Leader" : "Solo Entrant",
-        team: `${p.teamName || "Solo"} • ${p.booth || "Gate 2"}`,
+        role: p.teamName && p.teamName !== "Solo Participant" && p.teamName !== "Solo Entrant" ? "Team Leader" : "Solo Entrant",
+        team: `${p.teamName || "Solo"} • ${p.booth || "Gate 1"}`,
         passId: p.passCode,
         track: p.eventTitle.split(":")[0],
         perks: "Valid & Verified Registration • Access Granted",
         time: now,
       });
       showToast(`Access Granted: ${p.holderName} (${p.passCode})`);
+      setManualCode("");
       return;
     }
 
@@ -192,8 +127,8 @@ export default function VolunteerDashboardPage() {
       setDuplicateInfo({
         passId: p.passCode,
         holder: p.holderName,
-        time: verification.firstCheckInTime || p.checkInTime || "08:42:19 AM",
-        gate: verification.gateLocation || p.checkInGate || "Gate 2 Turing Hall",
+        time: verification.firstCheckInTime || p.checkInTime || now,
+        gate: verification.gateLocation || p.checkInGate || "Gate 1 Turing Hall",
       });
       showToast(`Duplicate Scan Blocked: ${p.passCode} already checked in`);
       return;
@@ -203,7 +138,7 @@ export default function VolunteerDashboardPage() {
     setScanState("invalid");
     setInvalidInfo({
       token: cleaned,
-      reason: verification.message,
+      reason: verification.message || "Invalid or unauthorized QR token",
     });
     showToast(`Invalid / Unauthorized QR Code: ${cleaned}`);
   };
@@ -211,13 +146,14 @@ export default function VolunteerDashboardPage() {
   const handleUndo = () => {
     const removed = undoLatestScan();
     if (removed) {
-      setShiftCount((c) => Math.max(0, c - 1));
       setUndoSeconds(0);
       showToast(`Reverted scan for ${removed.attendee} (${removed.passId})`);
     }
   };
 
-  const shiftPercent = ((shiftCount / 650) * 100).toFixed(1);
+  const validScansCount = scanLogs.filter((s) => s.status === "Valid").length;
+  const targetQuota = Math.max(10, passes.length);
+  const shiftPercent = Math.min(100, Math.round((validScansCount / targetQuota) * 100));
 
   return (
     <OpsShell
@@ -257,9 +193,9 @@ export default function VolunteerDashboardPage() {
                   Shift Progress
                 </span>
                 <span className="text-label-code font-bold text-on-surface">
-                  {shiftCount}{" "}
+                  {validScansCount}{" "}
                   <span className="text-on-surface-variant font-normal">
-                    / 650 quota
+                    / {targetQuota} quota
                   </span>
                 </span>
               </div>
@@ -388,44 +324,8 @@ export default function VolunteerDashboardPage() {
                     Align QR code inside reticle
                   </span>
                   <span className="text-label-code text-[11px] text-inverse-on-surface/60">
-                    AUTO-DETECT
+                    REAL-TIME OCR
                   </span>
-                </div>
-              </div>
-
-              <div className="mt-3 pt-1 flex items-center justify-between gap-2 flex-wrap">
-                <span className="text-label-token text-inverse-on-surface/70 uppercase">
-                  Trigger Simulated Scan:
-                </span>
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => triggerSimulated("valid")}
-                    className="px-2.5 py-1 rounded bg-tertiary-container hover:bg-tertiary text-on-tertiary text-label-token font-bold transition-all cursor-pointer"
-                  >
-                    Valid
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => triggerSimulated("duplicate")}
-                    className="px-2.5 py-1 rounded bg-error hover:bg-error/90 text-on-error text-label-token font-bold transition-all cursor-pointer"
-                  >
-                    Duplicate
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => triggerSimulated("invalid")}
-                    className="px-2.5 py-1 rounded bg-[#7F1D1D] hover:bg-[#991B1B] text-white text-label-token font-bold transition-all cursor-pointer"
-                  >
-                    Invalid
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => triggerSimulated("late")}
-                    className="px-2.5 py-1 rounded bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-white text-label-token font-bold transition-all cursor-pointer"
-                  >
-                    Late
-                  </button>
                 </div>
               </div>
             </div>
@@ -509,7 +409,21 @@ export default function VolunteerDashboardPage() {
           </div>
 
           <div className="xl:col-span-7 flex flex-col gap-4">
-            {scanState === "valid" && (
+            {scanState === "valid" && !lastScannedAttendee && (
+              <div className="bg-surface-container-lowest border border-[#E8E2D5] rounded-2xl p-10 shadow-sm flex flex-col items-center justify-center text-center space-y-3">
+                <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary">
+                  <QrCode className="w-8 h-8" />
+                </div>
+                <h3 className="font-headline text-[19px] font-bold text-on-surface">
+                  Scanner Active • Awaiting Badge
+                </h3>
+                <p className="text-[13.5px] text-on-surface-variant max-w-md">
+                  Point the camera at an attendee&apos;s digital QR pass, or enter their Pass ID in the manual box on the left. The verification engine checks HMAC cryptographic signatures in real time.
+                </p>
+              </div>
+            )}
+
+            {scanState === "valid" && lastScannedAttendee && (
               <div className="bg-[#ECFDF5] border border-[#10B981]/25 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
                 <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-background pointer-events-none" />
                 <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-background pointer-events-none" />
@@ -535,11 +449,9 @@ export default function VolunteerDashboardPage() {
 
                 <div className="bg-surface-container-lowest rounded-xl p-4 mb-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <img
-                      src={ALEX_AVATAR_URL}
-                      alt={lastScannedAttendee.name}
-                      className="w-16 h-16 rounded-xl object-cover shadow-sm shrink-0"
-                    />
+                    <div className="w-16 h-16 rounded-xl bg-primary-fixed text-on-primary-fixed font-bold text-xl flex items-center justify-center shadow-sm shrink-0">
+                      {lastScannedAttendee.name.slice(0, 2).toUpperCase()}
+                    </div>
                     <div className="flex flex-col min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-headline text-[19px] font-bold text-on-surface truncate">
@@ -575,22 +487,12 @@ export default function VolunteerDashboardPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      showToast("Marked all 3 members of Team SyntaxErrors Present!")
+                      showToast(`Attendance verified for ${lastScannedAttendee.name}`)
                     }
                     className="w-full sm:flex-1 py-3 px-4 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-headline text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
                   >
-                    <Users className="w-4 h-4" />
-                    <span>Mark Team Present (All 3 Members)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      showToast("Checked in Lead Hacker only (1 member)")
-                    }
-                    className="w-full sm:w-auto py-3 px-4 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-                  >
-                    <User className="w-4 h-4" />
-                    <span>Leader Only</span>
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Check-In Complete</span>
                   </button>
                   <button
                     type="button"
@@ -604,7 +506,7 @@ export default function VolunteerDashboardPage() {
               </div>
             )}
 
-            {scanState === "duplicate" && (
+            {scanState === "duplicate" && duplicateInfo && (
               <div className="bg-[#FEF2F2] border border-[#EF4444]/30 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4">
                   <div className="flex items-center gap-2.5">
@@ -621,7 +523,7 @@ export default function VolunteerDashboardPage() {
                     </div>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-[#EF4444] text-white text-label-token font-bold uppercase tracking-wider shadow-sm">
-                    Blocked #02
+                    Duplicate
                   </span>
                 </div>
 
@@ -649,16 +551,19 @@ export default function VolunteerDashboardPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      showToast("Incident escalated to Campus Security Desk #01")
+                      showToast("Incident logged to security audit")
                     }
                     className="px-4 py-2.5 rounded-lg bg-[#EF4444] hover:bg-[#DC2626] text-white text-[13px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
                   >
                     <Flag className="w-4 h-4" />
-                    <span>Confiscate Pass &amp; Escalate</span>
+                    <span>Report Duplicate</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setScanState("valid")}
+                    onClick={() => {
+                      setScanState("valid");
+                      setDuplicateInfo(null);
+                    }}
                     className="px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface text-[13px] font-semibold hover:bg-surface-container transition-colors shadow-sm cursor-pointer"
                   >
                     Dismiss Notice
@@ -667,7 +572,7 @@ export default function VolunteerDashboardPage() {
               </div>
             )}
 
-            {scanState === "invalid" && (
+            {scanState === "invalid" && invalidInfo && (
               <div className="bg-[#450A0A]/15 border border-[#EF4444]/40 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4">
                   <div className="flex items-center gap-2.5">
@@ -720,65 +625,13 @@ export default function VolunteerDashboardPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setScanState("valid")}
+                    onClick={() => {
+                      setScanState("valid");
+                      setInvalidInfo(null);
+                    }}
                     className="px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface text-[13px] font-semibold hover:bg-surface-container transition-colors shadow-sm cursor-pointer"
                   >
                     Clear Scanner
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {scanState === "late" && (
-              <div className="bg-[#FEF3C7] border border-[#F59E0B]/30 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F59E0B] text-white">
-                      <AlarmClock className="w-5 h-5" />
-                    </span>
-                    <div className="flex flex-col">
-                      <span className="text-label-token font-bold text-[#92400E] uppercase tracking-wider">
-                        Late Check-In Warning • Grace Window Expired
-                      </span>
-                      <span className="text-label-code text-[#B45309]">
-                        SCANNED AT 09:14 AM (GRACE CLOSED 09:00 AM)
-                      </span>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 rounded-full bg-[#F59E0B] text-white text-label-token font-bold uppercase tracking-wider shadow-sm">
-                    Flagged Late
-                  </span>
-                </div>
-
-                <div className="bg-surface-container-lowest rounded-xl p-4 mb-4 shadow-sm flex items-center justify-between flex-wrap gap-3">
-                  <div className="flex flex-col">
-                    <h4 className="font-headline text-[17px] font-bold text-on-surface">
-                      Jordan Rivera — Algorithmic Game Design
-                    </h4>
-                    <p className="text-[13px] text-on-surface-variant">
-                      Pass Code:{" "}
-                      <strong className="text-label-code text-on-surface">
-                        EH-2025-DES-8114
-                      </strong>
-                    </p>
-                  </div>
-                  <span className="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-token font-bold">
-                    Penalty Exempt Eligible
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShiftCount((c) => Math.min(650, c + 1));
-                      setScanState("valid");
-                      showToast("Volunteer override granted for Jordan Rivera");
-                    }}
-                    className="px-4 py-2.5 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-white text-[13px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Approve Overdue Admission</span>
                   </button>
                 </div>
               </div>
@@ -827,7 +680,14 @@ export default function VolunteerDashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="text-[13px] divide-y divide-outline-variant/15">
-                    {scanLogs.map((row) => (
+                    {scanLogs.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-on-surface-variant text-[13.5px]">
+                          No gate scans recorded yet today. Scans will be logged here in real time.
+                        </td>
+                      </tr>
+                    ) : (
+                      scanLogs.map((row) => (
                       <tr
                         key={row.id}
                         className={`hover:bg-surface-container-low/60 transition-colors ${
@@ -873,7 +733,8 @@ export default function VolunteerDashboardPage() {
                           )}
                         </td>
                       </tr>
-                    ))}
+                    ))
+                    )}
                   </tbody>
                 </table>
               </div>

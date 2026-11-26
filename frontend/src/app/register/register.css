@@ -1,13 +1,13 @@
-/* EventHub Cosmic Registration Form Styling - Matching Reference Screenshots */
+/* EventHub Warm Amber & Gold Yellow Registration Form Styling */
 
 .eh-reg-page {
   min-height: 100vh;
   background-color: #070510;
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 58, 237, 0.22), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(99, 102, 241, 0.14), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(168, 85, 247, 0.16), transparent 70%),
-    radial-gradient(circle at 50% 50%, rgba(14, 11, 26, 0.6) 0%, #070510 100%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(217, 119, 6, 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(217, 119, 6, 0.14), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(245, 158, 11, 0.16), transparent 70%),
+    radial-gradient(circle at 50% 50%, rgba(22, 19, 15, 0.6) 0%, #070510 100%);
   color: #f8f7fc;
   font-family: var(--font-plus-jakarta), var(--font-inter), system-ui, sans-serif;
   position: relative;
@@ -20,8 +20,8 @@
   inset: 0;
   pointer-events: none;
   background: 
-    radial-gradient(circle at 15% 25%, rgba(168, 85, 247, 0.15) 0, transparent 400px),
-    radial-gradient(circle at 85% 70%, rgba(124, 58, 237, 0.18) 0, transparent 500px);
+    radial-gradient(circle at 15% 25%, rgba(245, 158, 11, 0.15) 0, transparent 400px),
+    radial-gradient(circle at 85% 70%, rgba(217, 119, 6, 0.18) 0, transparent 500px);
   z-index: 0;
 }
 
@@ -35,12 +35,12 @@
 
 /* Top Mini Banner Card */
 .eh-reg-topcard {
-  background: linear-gradient(135deg, rgba(26, 20, 52, 0.75) 0%, rgba(14, 11, 28, 0.85) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, rgba(34, 29, 21, 0.75) 0%, rgba(22, 19, 15, 0.85) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   border-radius: 20px;
   padding: 18px 24px;
   margin-bottom: 24px;
-  box-shadow: 0 16px 40px -10px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 16px 40px -10px rgba(217, 119, 6, 0.25);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -54,9 +54,9 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: #c084fc;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 9999px;
   padding: 6px 14px;
   width: fit-content;
@@ -66,8 +66,8 @@
 }
 
 .eh-back-btn:hover {
-  background: rgba(168, 85, 247, 0.2);
-  border-color: rgba(168, 85, 247, 0.45);
+  background: rgba(245, 158, 11, 0.2);
+  border-color: rgba(245, 158, 11, 0.45);
   color: #ffffff;
   transform: translateX(-2px);
 }
@@ -91,7 +91,7 @@
   height: 80px;
   border-radius: 12px;
   object-fit: cover;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   background-color: #1a1530;
   flex-shrink: 0;
@@ -112,9 +112,9 @@
   letter-spacing: 0.05em;
   padding: 3px 10px;
   border-radius: 9999px;
-  background: rgba(168, 85, 247, 0.2);
-  color: #d8b4fe;
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
   width: fit-content;
 }
 
@@ -160,7 +160,7 @@
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 24px rgba(168, 85, 247, 0.4);
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.4);
 }
 
 /* Two Column Grid */
@@ -182,11 +182,11 @@
 
 /* Left Card: Registration Form Card */
 .eh-reg-maincard {
-  background: linear-gradient(145deg, rgba(23, 17, 46, 0.8) 0%, rgba(13, 10, 26, 0.9) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: linear-gradient(145deg, rgba(32, 28, 21, 0.8) 0%, rgba(20, 18, 14, 0.9) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 20px;
   padding: 28px;
-  box-shadow: 0 20px 50px -10px rgba(124, 58, 237, 0.22);
+  box-shadow: 0 20px 50px -10px rgba(217, 119, 6, 0.22);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -204,12 +204,12 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c084fc;
+  color: #fbbf24;
   flex-shrink: 0;
 }
 
@@ -221,7 +221,7 @@
 }
 
 .eh-card-title-group h2 span {
-  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -236,8 +236,8 @@
 .eh-mode-switcher {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: rgba(15, 11, 28, 0.7);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(24, 21, 16, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 14px;
   padding: 4px;
   gap: 6px;
@@ -260,9 +260,9 @@
 }
 
 .eh-mode-btn.active {
-  background: linear-gradient(90deg, #9333ea 0%, #6366f1 100%);
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
   color: #ffffff;
-  box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
 }
 
 .eh-mode-btn:not(.active):hover {
@@ -286,7 +286,7 @@
   display: inline-block;
   width: 4px;
   height: 18px;
-  background: linear-gradient(180deg, #c084fc, #7c3aed);
+  background: linear-gradient(180deg, #fbbf24, #d97706);
   border-radius: 2px;
 }
 
@@ -308,23 +308,23 @@
 }
 
 .eh-form-label .req {
-  color: #c084fc;
+  color: #fbbf24;
 }
 
 .eh-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(14, 11, 26, 0.85);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(22, 19, 15, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 12px;
   padding: 0 14px;
   transition: all 0.2s ease;
 }
 
 .eh-input-wrap:focus-within {
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
 .eh-input-icon {
@@ -349,7 +349,7 @@
 }
 
 .eh-send-otp-btn {
-  background: #7c3aed;
+  background: #d97706;
   border: none;
   color: #ffffff;
   font-size: 12px;
@@ -360,19 +360,19 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   margin-left: 8px;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
 }
 
 .eh-send-otp-btn:hover {
-  background: #9333ea;
-  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.45);
+  background: #d97706;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.45);
 }
 
 .eh-otp-timer {
   font-size: 12px;
   font-weight: 600;
-  color: #c084fc;
-  background: rgba(168, 85, 247, 0.15);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
   padding: 4px 8px;
   border-radius: 6px;
   white-space: nowrap;
@@ -406,8 +406,8 @@
   grid-template-columns: 36px 1fr 1fr 36px;
   gap: 12px;
   align-items: center;
-  background: rgba(15, 11, 28, 0.6);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  background: rgba(24, 21, 16, 0.6);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 12px;
   padding: 10px 12px;
   margin-bottom: 10px;
@@ -424,14 +424,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(168, 85, 247, 0.25);
-  color: #d8b4fe;
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
   font-size: 13px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(168, 85, 247, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
 .eh-trash-btn {
@@ -459,10 +459,10 @@
   gap: 8px;
   width: 100%;
   padding: 12px;
-  border: 1px dashed rgba(168, 85, 247, 0.35);
+  border: 1px dashed rgba(245, 158, 11, 0.35);
   border-radius: 12px;
-  background: rgba(168, 85, 247, 0.05);
-  color: #c084fc;
+  background: rgba(245, 158, 11, 0.05);
+  color: #fbbf24;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -471,8 +471,8 @@
 }
 
 .eh-add-member-btn:hover:not(:disabled) {
-  background: rgba(168, 85, 247, 0.12);
-  border-color: #a855f7;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
   color: #ffffff;
 }
 
@@ -483,11 +483,11 @@
 
 /* Right Card: Event Summary */
 .eh-reg-summarycard {
-  background: linear-gradient(145deg, rgba(23, 17, 46, 0.8) 0%, rgba(13, 10, 26, 0.9) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: linear-gradient(145deg, rgba(32, 28, 21, 0.8) 0%, rgba(20, 18, 14, 0.9) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 20px 50px -10px rgba(124, 58, 237, 0.22);
+  box-shadow: 0 20px 50px -10px rgba(217, 119, 6, 0.22);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -504,7 +504,7 @@
   font-weight: 700;
   color: #ffffff;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .eh-summary-thumb {
@@ -512,7 +512,7 @@
   height: 140px;
   border-radius: 14px;
   object-fit: cover;
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   background-color: #1a1530;
 }
 
@@ -546,7 +546,7 @@
 
 .eh-summary-divider {
   height: 1px;
-  background: rgba(168, 85, 247, 0.2);
+  background: rgba(245, 158, 11, 0.2);
   width: 100%;
 }
 
@@ -569,7 +569,7 @@
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
 }
 
 .eh-perks-list {
@@ -593,22 +593,22 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(168, 85, 247, 0.25);
-  border: 1px solid rgba(168, 85, 247, 0.5);
+  background: rgba(245, 158, 11, 0.25);
+  border: 1px solid rgba(245, 158, 11, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c084fc;
+  color: #fbbf24;
   flex-shrink: 0;
 }
 
 /* Bottom Card: Payment Method Selection */
 .eh-payment-card {
-  background: linear-gradient(145deg, rgba(23, 17, 46, 0.8) 0%, rgba(13, 10, 26, 0.9) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: linear-gradient(145deg, rgba(32, 28, 21, 0.8) 0%, rgba(20, 18, 14, 0.9) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 20px;
   padding: 26px;
-  box-shadow: 0 20px 50px -10px rgba(124, 58, 237, 0.22);
+  box-shadow: 0 20px 50px -10px rgba(217, 119, 6, 0.22);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   margin-bottom: 24px;
@@ -627,12 +627,12 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c084fc;
+  color: #fbbf24;
 }
 
 .eh-payment-head-text h3 {
@@ -643,7 +643,7 @@
 }
 
 .eh-payment-head-text h3 .req {
-  color: #c084fc;
+  color: #fbbf24;
 }
 
 .eh-payment-head-text p {
@@ -672,8 +672,8 @@
 
 .eh-method-option {
   position: relative;
-  background: rgba(15, 11, 28, 0.7);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  background: rgba(24, 21, 16, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 14px;
   padding: 18px 16px;
   cursor: pointer;
@@ -684,15 +684,15 @@
 }
 
 .eh-method-option:hover {
-  border-color: rgba(168, 85, 247, 0.45);
-  background: rgba(22, 16, 42, 0.85);
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(30, 26, 19, 0.85);
   transform: translateY(-2px);
 }
 
 .eh-method-option.selected {
-  border-color: #a855f7;
-  background: linear-gradient(145deg, rgba(32, 22, 60, 0.9) 0%, rgba(18, 13, 36, 0.95) 100%);
-  box-shadow: 0 0 0 1px #a855f7, 0 8px 24px -4px rgba(168, 85, 247, 0.35);
+  border-color: #f59e0b;
+  background: linear-gradient(145deg, rgba(40, 34, 24, 0.9) 0%, rgba(28, 25, 20, 0.95) 100%);
+  box-shadow: 0 0 0 1px #f59e0b, 0 8px 24px -4px rgba(245, 158, 11, 0.35);
 }
 
 .eh-method-top {
@@ -705,7 +705,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 2px solid rgba(168, 85, 247, 0.4);
+  border: 2px solid rgba(245, 158, 11, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,8 +713,8 @@
 }
 
 .eh-method-option.selected .eh-radio-circle {
-  border-color: #c084fc;
-  background: #7c3aed;
+  border-color: #fbbf24;
+  background: #d97706;
 }
 
 .eh-radio-dot {
@@ -725,7 +725,7 @@
 }
 
 .eh-method-icon {
-  color: #c084fc;
+  color: #fbbf24;
 }
 
 .eh-method-name {
@@ -763,8 +763,8 @@
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  border: 1px solid rgba(168, 85, 247, 0.4);
-  background: rgba(14, 11, 26, 0.8);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(22, 19, 15, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -773,12 +773,12 @@
 }
 
 .eh-terms-input:checked + .eh-custom-check {
-  background: linear-gradient(135deg, #9333ea, #6366f1);
-  border-color: #a855f7;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  border-color: #f59e0b;
 }
 
 .eh-terms-link {
-  color: #c084fc;
+  color: #fbbf24;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -793,19 +793,19 @@
   gap: 10px;
   padding: 14px 28px;
   border-radius: 9999px;
-  background: linear-gradient(90deg, #9333ea 0%, #6366f1 100%);
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
   color: #ffffff;
   font-size: 14.5px;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  box-shadow: 0 8px 24px -4px rgba(147, 51, 234, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.45);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .eh-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 30px -4px rgba(147, 51, 234, 0.65);
+  box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.65);
 }
 
 .eh-submit-btn:disabled {
@@ -819,7 +819,7 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(4, 2, 10, 0.85);
+  background: rgba(10, 9, 7, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   display: flex;
@@ -832,9 +832,9 @@
   width: 100%;
   max-width: 500px;
   background: linear-gradient(165deg, #181232 0%, #0d0a1c 100%);
-  border: 1px solid rgba(168, 85, 247, 0.45);
+  border: 1px solid rgba(245, 158, 11, 0.45);
   border-radius: 24px;
-  box-shadow: 0 24px 70px -10px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 24px 70px -10px rgba(217, 119, 6, 0.5);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -856,12 +856,12 @@
    EventHub Registration Page Light Mode Overrides
    ========================================================================== */
 html[data-theme="light"] .eh-reg-page {
-  background-color: #f6f4fc;
+  background-color: #fbf9f4;
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(168, 85, 247, 0.14), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(99, 102, 241, 0.1), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(192, 132, 252, 0.12), transparent 70%);
-  color: #141026;
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 158, 11, 0.14), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(217, 119, 6, 0.1), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(251, 191, 36, 0.12), transparent 70%);
+  color: #1c1917;
 }
 
 html[data-theme="light"] .eh-reg-topcard,
@@ -869,8 +869,8 @@ html[data-theme="light"] .eh-reg-maincard,
 html[data-theme="light"] .eh-reg-summarycard,
 html[data-theme="light"] .eh-payment-card {
   background: #ffffff;
-  border-color: rgba(124, 58, 237, 0.22);
-  box-shadow: 0 14px 36px -12px rgba(124, 58, 237, 0.14);
+  border-color: rgba(217, 119, 6, 0.22);
+  box-shadow: 0 14px 36px -12px rgba(217, 119, 6, 0.14);
 }
 
 html[data-theme="light"] .eh-top-title,
@@ -882,7 +882,7 @@ html[data-theme="light"] .eh-summary-title,
 html[data-theme="light"] .eh-summary-fee-value,
 html[data-theme="light"] .eh-payment-head-text h3,
 html[data-theme="light"] .eh-method-name {
-  color: #141026;
+  color: #1c1917;
   text-shadow: none;
 }
 
@@ -900,73 +900,73 @@ html[data-theme="light"] .eh-summary-fee-label {
 html[data-theme="light"] .eh-form-label,
 html[data-theme="light"] .eh-perk-item,
 html[data-theme="light"] .eh-terms-label {
-  color: #2c244a;
+  color: #1c1917;
 }
 
 html[data-theme="light"] .eh-back-btn,
 html[data-theme="light"] .eh-top-badge {
-  background: #f3e8ff;
-  color: #6d28d9;
-  border-color: rgba(124, 58, 237, 0.28);
+  background: #fef3c7;
+  color: #92400e;
+  border-color: rgba(217, 119, 6, 0.28);
 }
 
 html[data-theme="light"] .eh-back-btn:hover {
-  background: #e9d5ff;
-  color: #4c1d95;
+  background: #fde68a;
+  color: #78350f;
 }
 
 html[data-theme="light"] .eh-mode-switcher {
-  background: #f3f0fb;
-  border-color: rgba(124, 58, 237, 0.2);
+  background: #fef9ee;
+  border-color: rgba(217, 119, 6, 0.2);
 }
 
 html[data-theme="light"] .eh-mode-btn:not(.active) {
-  color: #575073;
+  color: #57534e;
 }
 
 html[data-theme="light"] .eh-mode-btn:not(.active):hover {
-  color: #141026;
-  background: rgba(124, 58, 237, 0.08);
+  color: #1c1917;
+  background: rgba(217, 119, 6, 0.08);
 }
 
 html[data-theme="light"] .eh-input-wrap,
 html[data-theme="light"] .eh-member-row,
 html[data-theme="light"] .eh-method-option {
-  background: #faf9fe;
-  border-color: rgba(124, 58, 237, 0.22);
+  background: #ffffff;
+  border-color: rgba(217, 119, 6, 0.22);
 }
 
 html[data-theme="light"] .eh-method-option:hover {
-  background: #f3e8ff;
+  background: #fef3c7;
 }
 
 html[data-theme="light"] .eh-method-option.selected {
-  background: linear-gradient(145deg, #f5f3ff 0%, #ede9fe 100%);
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 1px #7c3aed, 0 8px 20px -6px rgba(124, 58, 237, 0.28);
+  background: linear-gradient(145deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #d97706;
+  box-shadow: 0 0 0 1px #d97706, 0 8px 20px -6px rgba(217, 119, 6, 0.28);
 }
 
 html[data-theme="light"] .eh-input-field {
-  color: #141026;
+  color: #1c1917;
 }
 
 html[data-theme="light"] .eh-input-field::placeholder {
-  color: #8b85a6;
+  color: #a8a29e;
 }
 
 html[data-theme="light"] .eh-otp-timer,
 html[data-theme="light"] .eh-member-badge,
 html[data-theme="light"] .eh-perk-check {
-  background: #ede9fe;
-  color: #6d28d9;
-  border-color: rgba(124, 58, 237, 0.3);
+  background: #fef3c7;
+  color: #92400e;
+  border-color: rgba(217, 119, 6, 0.3);
 }
 
 html[data-theme="light"] .eh-custom-check {
   background: #ffffff;
-  border-color: rgba(124, 58, 237, 0.35);
+  border-color: rgba(217, 119, 6, 0.35);
 }
 
 html[data-theme="light"] .eh-terms-link {
-  color: #7c3aed;
+  color: #d97706;
 }

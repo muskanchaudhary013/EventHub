@@ -53,6 +53,18 @@ const eventSchema = new mongoose.Schema(
       enum: ["free", "paid"],
       default: "free",
     },
+    feeNumeric: {
+      type: Number,
+      default: 0,
+    },
+    feeLabel: {
+      type: String,
+      default: "Free",
+    },
+    maxTeamMembers: {
+      type: Number,
+      default: 1,
+    },
     prizeLabel: {
       type: String,
       default: "Certificates & Medals",

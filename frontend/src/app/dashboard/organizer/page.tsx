@@ -26,7 +26,7 @@ import { AttendeeRecord, INITIAL_EVENTS } from "@/lib/eventhub-data";
 import { useEventHub } from "@/context/EventHubContext";
 
 export default function OrganizerDashboardPage() {
-  const { attendees, latestAudit, overrideAttendeeStatus, addEvent } =
+  const { events, attendees, scanLogs, latestAudit, overrideAttendeeStatus, addEvent } =
     useEventHub();
 
   const [selectedDay, setSelectedDay] = useState("d1");
@@ -51,7 +51,7 @@ export default function OrganizerDashboardPage() {
   const filteredAttendees = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     return attendees.filter((a) => {
-      if (eventFilter !== "all" && a.eventKey !== eventFilter) return false;
+      if (eventFilter !== "all" && !a.event.toLowerCase().includes(eventFilter.toLowerCase())) return false;
       if (statusFilter !== "all" && a.status.toLowerCase() !== statusFilter)
         return false;
       if (typeFilter !== "all" && a.type.toLowerCase() !== typeFilter)
@@ -65,8 +65,20 @@ export default function OrganizerDashboardPage() {
     });
   }, [attendees, searchTerm, eventFilter, statusFilter, typeFilter]);
 
-  const presentCount =
-    2719 + attendees.filter((a) => a.status === "Present").length - 2;
+  const totalRegistrations = attendees.length;
+  const presentCount = attendees.filter((a) => a.status === "Present").length;
+  const totalCapacity = events.reduce((sum, e) => sum + (e.capacityCount || 0), 0) || 1000;
+  const bookedPercent = totalCapacity > 0 ? ((totalRegistrations / totalCapacity) * 100).toFixed(1) : "0.0";
+  const remainingOffsite = Math.max(0, totalRegistrations - presentCount);
+  const checkinPercent = totalRegistrations > 0 ? ((presentCount / totalRegistrations) * 100).toFixed(1) : "0.0";
+
+  const teamAttendees = attendees.filter((a) => a.type === "Team").length;
+  const soloAttendees = attendees.filter((a) => a.type === "Solo").length;
+  const teamPercent = totalRegistrations > 0 ? Math.round((teamAttendees / totalRegistrations) * 100) : 0;
+  const soloPercent = totalRegistrations > 0 ? 100 - teamPercent : 0;
+
+  const duplicateBlocked = scanLogs.filter((s) => s.status === "Duplicate").length;
+  const lateArrivals = attendees.filter((a) => a.status === "Late").length;
 
   const handleExportCsv = () => {
     const header =
@@ -126,13 +138,13 @@ export default function OrganizerDashboardPage() {
               </h1>
               <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-token uppercase font-semibold">
                 <span className="w-2 h-2 rounded-full bg-secondary animate-ping" />
-                TechFest 2025 Live Edition
+                Live Ops Console
               </span>
             </div>
             <p className="text-[13px] text-on-surface-variant flex flex-wrap items-center gap-2.5">
               <span>Real-time gate telemetry</span>
               <span className="inline-block w-1 h-1 rounded-full bg-on-surface-variant" />
-              <span className="text-label-code">Zone 1-4 Active</span>
+              <span className="text-label-code">Zone Gates Active</span>
               <span className="inline-block w-1 h-1 rounded-full bg-on-surface-variant" />
               <span className="text-tertiary font-medium flex items-center gap-1">
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -195,19 +207,19 @@ export default function OrganizerDashboardPage() {
               </div>
               <div className="mt-4 flex flex-col">
                 <span className="text-metric-kpi text-on-surface">
-                  {(3842 + (attendees.length - 5)).toLocaleString()}
+                  {totalRegistrations.toLocaleString()}
                 </span>
                 <div className="mt-1 flex items-center gap-1.5 text-label-code text-tertiary">
                   <TrendingUp className="w-4 h-4" />
-                  <span>+14.2%</span>
+                  <span>{bookedPercent}% Booked</span>
                   <span className="text-on-surface-variant font-sans text-[13px]">
-                    vs TechFest &apos;24
+                    across fest
                   </span>
                 </div>
               </div>
               <div className="mt-4 pt-2 border-t border-outline-variant/20 flex justify-between text-label-code text-on-surface-variant">
-                <span>Capacity: 4,000 max</span>
-                <span className="text-primary font-semibold">96.0% Booked</span>
+                <span>Capacity: {totalCapacity.toLocaleString()} total</span>
+                <span className="text-primary font-semibold">{totalRegistrations} passes issued</span>
               </div>
             </div>
 
@@ -226,20 +238,20 @@ export default function OrganizerDashboardPage() {
                     {presentCount.toLocaleString()}
                   </span>
                   <span className="text-label-code text-tertiary font-bold">
-                    70.8%
+                    {checkinPercent}%
                   </span>
                 </div>
                 <div className="mt-2.5 w-full bg-surface-container h-2 rounded-full overflow-hidden">
                   <div
                     className="bg-tertiary h-full rounded-full"
-                    style={{ width: "70.8%" }}
+                    style={{ width: `${Math.min(100, Number(checkinPercent))}%` }}
                   />
                 </div>
               </div>
               <div className="mt-4 pt-2 border-t border-outline-variant/20 flex justify-between text-label-code text-on-surface-variant">
                 <span>Remaining off-site</span>
                 <span className="text-on-surface font-semibold">
-                  1,123 passes
+                  {remainingOffsite.toLocaleString()} passes
                 </span>
               </div>
             </div>
@@ -255,26 +267,26 @@ export default function OrganizerDashboardPage() {
               </div>
               <div className="mt-4 flex flex-col gap-1">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-metric-kpi text-on-surface">2,722</span>
+                  <span className="text-metric-kpi text-on-surface">{teamAttendees}</span>
                   <span className="text-label-code text-secondary font-bold">
-                    71% Teams
+                    {teamPercent}% Teams
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[13px] text-on-surface-variant">
                   <span>Solo Attendees:</span>
                   <span className="text-label-code text-on-surface font-semibold">
-                    1,120 (29%)
+                    {soloAttendees} ({soloPercent}%)
                   </span>
                 </div>
               </div>
               <div className="mt-4 pt-2 flex items-center gap-1">
                 <div
                   className="h-2 rounded-l-full bg-secondary"
-                  style={{ width: "71%" }}
+                  style={{ width: `${totalRegistrations > 0 ? teamPercent : 50}%` }}
                 />
                 <div
                   className="h-2 rounded-r-full bg-surface-variant"
-                  style={{ width: "29%" }}
+                  style={{ width: `${totalRegistrations > 0 ? soloPercent : 50}%` }}
                 />
               </div>
             </div>
@@ -290,14 +302,14 @@ export default function OrganizerDashboardPage() {
               </div>
               <div className="mt-4 flex flex-col">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-metric-kpi text-error">3</span>
+                  <span className="text-metric-kpi text-error">{duplicateBlocked}</span>
                   <span className="text-[13px] font-semibold text-error">
                     Duplicate Blocked
                   </span>
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-label-code text-secondary">
                   <Clock className="w-4 h-4" />
-                  <span>42 Late Arrivals</span>
+                  <span>{lateArrivals} Late Arrivals</span>
                   <span className="text-on-surface-variant font-sans text-[12px]">
                     flagged today
                   </span>
@@ -307,7 +319,7 @@ export default function OrganizerDashboardPage() {
                 <span>Security status</span>
                 <span className="text-tertiary font-semibold flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-tertiary" />
-                  Hardware Secured
+                  Live Secured
                 </span>
               </div>
             </div>
@@ -318,107 +330,72 @@ export default function OrganizerDashboardPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-5">
               <div>
                 <h2 className="font-headline text-[18px] font-bold text-on-surface">
-                  Venue Load &amp; Sector Capacity
+                  Venue Load &amp; Event Capacity
                 </h2>
                 <p className="text-[13px] text-on-surface-variant">
-                  Sensor gates tracking real-time occupancy limits across campus
-                  grounds.
+                  Live occupancy tracking across registered campus tracks.
                 </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {[
-                {
-                  name: "Main Auditorium",
-                  sub: "Keynotes & Hackathon Opening Stage",
-                  badge: "Amber Alert 94%",
-                  badgeStyle: "bg-error-container text-on-error-container",
-                  ping: true,
-                  seats: "1,410 / 1,500 seats",
-                  left: "90 Left",
-                  leftColor: "text-error",
-                  barColor: "bg-error",
-                  pct: 94,
-                  gate: "Gate 1 & 2",
-                  flow: "+18 / min",
-                },
-                {
-                  name: "Turing Lab Complex",
-                  sub: "RoboWars Arena & Hardware Labs",
-                  badge: "78% Capacity",
-                  badgeStyle: "bg-secondary-fixed text-on-secondary-fixed",
-                  ping: false,
-                  seats: "780 / 1,000 seats",
-                  left: "220 Left",
-                  leftColor: "text-secondary",
-                  barColor: "bg-secondary-container",
-                  pct: 78,
-                  gate: "West Portal",
-                  flow: "+6 / min",
-                },
-                {
-                  name: "Sports Complex Pavilion",
-                  sub: "PixelCraft Expo & Sponsor Pavilion",
-                  badge: "52% Capacity",
-                  badgeStyle: "bg-tertiary-fixed text-on-tertiary-fixed",
-                  ping: false,
-                  seats: "780 / 1,500 seats",
-                  left: "720 Available",
-                  leftColor: "text-tertiary",
-                  barColor: "bg-tertiary",
-                  pct: 52,
-                  gate: "Field Entry South",
-                  flow: "+3 / min",
-                },
-              ].map((v) => (
-                <div
-                  key={v.name}
-                  className="p-4 rounded-xl bg-surface-container-low border border-[#E8E2D5]/70 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[15px] font-bold text-on-surface">
-                        {v.name}
+              {events.slice(0, 3).map((ev) => {
+                const evAttendees = attendees.filter((a) =>
+                  a.event.toLowerCase().includes(ev.title.split(":")[0].toLowerCase())
+                );
+                const evPresent = evAttendees.filter((a) => a.status === "Present").length;
+                const regCount = ev.registeredCount || evAttendees.length;
+                const pct =
+                  ev.capacityCount > 0
+                    ? Math.min(100, Math.round((regCount / ev.capacityCount) * 100))
+                    : 0;
+
+                return (
+                  <div
+                    key={ev.id || ev.trackCode}
+                    className="p-4 rounded-xl bg-surface-container-low border border-[#E8E2D5]/70 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[15px] font-bold text-on-surface truncate">
+                          {ev.title.split(":")[0]}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-label-token uppercase font-bold bg-secondary-fixed text-on-secondary-fixed">
+                          {pct}% Booked
+                        </span>
+                      </div>
+                      <p className="text-[13px] text-on-surface-variant mt-0.5 truncate">
+                        {ev.venue}
+                      </p>
+                    </div>
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between text-label-code mb-1">
+                        <span className="text-on-surface">
+                          {regCount} / {ev.capacityCount} seats
+                        </span>
+                        <span className="font-bold text-secondary">
+                          {Math.max(0, ev.capacityCount - regCount)} Left
+                        </span>
+                      </div>
+                      <div className="w-full bg-surface-variant h-3 rounded-full overflow-hidden">
+                        <div
+                          className="bg-primary-container h-full rounded-full transition-all duration-300"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-2 flex items-center justify-between text-on-surface-variant text-label-code">
+                      <span className="flex items-center gap-1">
+                        <Radio className="w-3.5 h-3.5" />
+                        {ev.categoryLabel || "Track"}
                       </span>
-                      <span
-                        className={`px-2 py-0.5 rounded text-label-token uppercase font-bold flex items-center gap-1 ${v.badgeStyle}`}
-                      >
-                        {v.ping && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-error animate-ping" />
-                        )}
-                        {v.badge}
+                      <span className="text-on-surface font-medium">
+                        Present: {evPresent}
                       </span>
                     </div>
-                    <p className="text-[13px] text-on-surface-variant mt-0.5">
-                      {v.sub}
-                    </p>
                   </div>
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between text-label-code mb-1">
-                      <span className="text-on-surface">{v.seats}</span>
-                      <span className={`font-bold ${v.leftColor}`}>
-                        {v.left}
-                      </span>
-                    </div>
-                    <div className="w-full bg-surface-variant h-3 rounded-full overflow-hidden">
-                      <div
-                        className={`${v.barColor} h-full rounded-full`}
-                        style={{ width: `${v.pct}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-2 flex items-center justify-between text-on-surface-variant text-label-code">
-                    <span className="flex items-center gap-1">
-                      <Radio className="w-3.5 h-3.5" />
-                      {v.gate}
-                    </span>
-                    <span className="text-on-surface font-medium">
-                      Flow: {v.flow}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
 
@@ -456,10 +433,14 @@ export default function OrganizerDashboardPage() {
                     className="bg-transparent text-[13px] focus:outline-none cursor-pointer"
                   >
                     <option value="all">All Events</option>
-                    <option value="hackcampus">HackCampus 48h</option>
-                    <option value="robowars">RoboWars Arena</option>
-                    <option value="pixelcraft">PixelCraft UI/UX</option>
-                    <option value="cyberpulse">CyberPulse CTF</option>
+                    {events.map((ev) => {
+                      const shortName = ev.title.split(":")[0];
+                      return (
+                        <option key={ev.id || ev.trackCode} value={shortName}>
+                          {shortName}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 
@@ -631,24 +612,34 @@ export default function OrganizerDashboardPage() {
                   <span className="text-label-token uppercase text-primary font-bold">
                     Latest Audit Event
                   </span>
-                  <span className="text-label-code text-on-surface-variant">
-                    {latestAudit.time}
-                  </span>
+                  {latestAudit && (
+                    <span className="text-label-code text-on-surface-variant">
+                      {latestAudit.time}
+                    </span>
+                  )}
                 </div>
-                <p className="text-[13px] text-on-surface mt-0.5">
-                  Admin <strong>{latestAudit.actor}</strong> updated Pass{" "}
-                  <strong className="text-label-code">
-                    {latestAudit.passId}
-                  </strong>{" "}
-                  to{" "}
-                  <span className="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-[11px]">
-                    {latestAudit.status}
-                  </span>
-                  .
-                </p>
-                <span className="text-on-surface-variant text-label-code text-[11px] mt-0.5">
-                  Reason: {latestAudit.reason}
-                </span>
+                {latestAudit ? (
+                  <>
+                    <p className="text-[13px] text-on-surface mt-0.5">
+                      Admin <strong>{latestAudit.actor}</strong> updated Pass{" "}
+                      <strong className="text-label-code">
+                        {latestAudit.passId}
+                      </strong>{" "}
+                      to{" "}
+                      <span className="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-semibold text-[11px]">
+                        {latestAudit.status}
+                      </span>
+                      .
+                    </p>
+                    <span className="text-on-surface-variant text-label-code text-[11px] mt-0.5">
+                      Reason: {latestAudit.reason}
+                    </span>
+                  </>
+                ) : (
+                  <p className="text-[13px] text-on-surface-variant mt-0.5">
+                    No status overrides recorded yet. Any manual attendee override will appear here live.
+                  </p>
+                )}
               </div>
             </div>
 

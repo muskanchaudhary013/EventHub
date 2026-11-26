@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { DigitalPass, EventItem } from "@/lib/eventhub-data";
 import { useEventHub } from "@/context/EventHubContext";
+import { useAuth } from "@/context/AuthContext";
 import { QrCodeSvg } from "./QrCodeSvg";
 
 interface QuickRegistrationModalProps {
@@ -23,10 +24,11 @@ export function QuickRegistrationModal({
   event,
   onClose,
 }: QuickRegistrationModalProps) {
+  const { user } = useAuth();
   const { registerPass } = useEventHub();
   const [regType, setRegType] = useState<"solo" | "team">("solo");
-  const [fullName, setFullName] = useState("Alex Chen");
-  const [email, setEmail] = useState("alex.chen@campus.edu");
+  const [fullName, setFullName] = useState(user?.displayName || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [teamName, setTeamName] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
   const [issuedPass, setIssuedPass] = useState<DigitalPass | null>(null);
@@ -36,7 +38,9 @@ export function QuickRegistrationModal({
     setStatus("idle");
     setIssuedPass(null);
     setRegType(event.teamType === "team" ? "team" : "solo");
-  }, [event]);
+    if (user?.displayName && !fullName) setFullName(user.displayName);
+    if (user?.email && !email) setEmail(user.email);
+  }, [event, user]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -55,8 +59,8 @@ export function QuickRegistrationModal({
     setTimeout(() => {
       const pass = registerPass({
         event,
-        holderName: fullName.trim() || "Alex Chen",
-        holderEmail: email.trim() || "alex.chen@campus.edu",
+        holderName: fullName.trim() || user?.displayName || "Participant",
+        holderEmail: email.trim() || user?.email || "attendee@eventhub.live",
         isTeam: regType === "team",
         teamName: teamName.trim() || undefined,
       });
@@ -85,12 +89,12 @@ export function QuickRegistrationModal({
         style={{
           width: "100%",
           maxWidth: 530,
-          background: "linear-gradient(165deg, #16112b 0%, #0e0b1b 100%)",
-          border: "1px solid rgba(192, 132, 252, 0.45)",
+          background: "linear-gradient(165deg, #1f1b13 0%, #15130e 100%)",
+          border: "1px solid rgba(245, 158, 11, 0.45)",
           borderRadius: 22,
-          boxShadow: "0 24px 70px -10px rgba(124, 58, 237, 0.48)",
+          boxShadow: "0 24px 70px -10px rgba(217, 119, 6, 0.48)",
           overflow: "hidden",
-          color: "#f8f7fc",
+          color: "#faf8f5",
           fontFamily: "var(--font-plus-jakarta), var(--font-inter), system-ui, sans-serif",
           maxHeight: "92vh",
           display: "flex",
@@ -115,11 +119,11 @@ export function QuickRegistrationModal({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: "#a855f7",
-                boxShadow: "0 0 10px #a855f7",
+                background: "#f59e0b",
+                boxShadow: "0 0 10px #f59e0b",
               }}
             />
-            <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#d8b4fe" }}>
+            <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#d97706" }}>
               Instant QR Pass Registration
             </span>
           </div>
@@ -140,13 +144,13 @@ export function QuickRegistrationModal({
             <h3 style={{ fontSize: 21, fontWeight: 800, margin: "10px 0 6px", color: "#fff" }}>
               {event.title}
             </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "#a69ec2", fontSize: 13 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "#a8a29e", fontSize: 13 }}>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Calendar className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                <Calendar className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                 {event.dateFull}
               </span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <MapPin className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
+                <MapPin className="w-3.5 h-3.5" style={{ color: "#d97706" }} />
                 {event.venue}
               </span>
             </div>
@@ -158,7 +162,7 @@ export function QuickRegistrationModal({
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: 6,
-              background: "rgba(9, 7, 18, 0.75)",
+              background: "rgba(15, 14, 11, 0.75)",
               border: "1px solid rgba(255,255,255,0.08)",
               padding: 4,
               borderRadius: 999,
@@ -168,8 +172,8 @@ export function QuickRegistrationModal({
               type="button"
               onClick={() => setRegType("solo")}
               style={{
-                background: regType === "solo" ? "linear-gradient(135deg, #c084fc, #7c3aed)" : "transparent",
-                color: regType === "solo" ? "#fff" : "#a69ec2",
+                background: regType === "solo" ? "linear-gradient(135deg, #fbbf24, #d97706)" : "transparent",
+                color: regType === "solo" ? "#171511" : "#a8a29e",
                 border: 0,
                 borderRadius: 999,
                 padding: "8px 14px",
@@ -184,8 +188,8 @@ export function QuickRegistrationModal({
               type="button"
               onClick={() => setRegType("team")}
               style={{
-                background: regType === "team" ? "linear-gradient(135deg, #c084fc, #7c3aed)" : "transparent",
-                color: regType === "team" ? "#fff" : "#a69ec2",
+                background: regType === "team" ? "linear-gradient(135deg, #fbbf24, #d97706)" : "transparent",
+                color: regType === "team" ? "#171511" : "#a8a29e",
                 border: 0,
                 borderRadius: 999,
                 padding: "8px 14px",
@@ -244,8 +248,8 @@ export function QuickRegistrationModal({
           {/* Live QR Pass Preview */}
           <div
             style={{
-              background: "linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(16, 13, 30, 0.9))",
-              border: "1px solid rgba(192, 132, 252, 0.35)",
+              background: "linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(28, 25, 20, 0.9))",
+              border: "1px solid rgba(245, 158, 11, 0.35)",
               borderRadius: 16,
               padding: 16,
               display: "flex",

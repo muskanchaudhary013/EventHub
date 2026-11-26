@@ -9,7 +9,8 @@
     "dev:backend": "npm run dev --prefix backend",
     "dev": "node -e \"const { spawn } = require('child_process'); const fe = spawn('npm', ['run', 'dev', '--prefix', 'frontend'], { stdio: 'inherit', shell: true }); const be = spawn('npm', ['run', 'dev', '--prefix', 'backend'], { stdio: 'inherit', shell: true }); process.on('SIGINT', () => { fe.kill(); be.kill(); process.exit(); });\"",
     "build": "npm run build --prefix frontend",
-    "seed": "npm run seed --prefix backend"
+    "seed": "npm run seed --prefix backend",
+    "db:clear": "npm run db:clear --prefix backend"
   },
   "keywords": [
     "eventhub",

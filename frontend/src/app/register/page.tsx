@@ -36,7 +36,7 @@ export default function RegisterIndexPage(props: SearchProps) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#c084fc",
+                color: "#d97706",
               }}
             >
               Loading registration form...

@@ -4,6 +4,7 @@ import passRoutes from "./passRoutes.js";
 import scanRoutes from "./scanRoutes.js";
 import userRoutes from "./userRoutes.js";
 import attendeeRoutes from "./attendeeRoutes.js";
+import notificationRoutes from "./notificationRoutes.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/passes", passRoutes);
 router.use("/scans", scanRoutes);
 router.use("/users", userRoutes);
 router.use("/attendees", attendeeRoutes);
+router.use("/notifications", notificationRoutes);
 
 export default router;

@@ -18,28 +18,32 @@ import {
 } from "@/context/AuthContext";
 import "../home.css";
 
-const DASHBOARD_OPTIONS: Array<{
+const DASHBOARD_OPTIONS: {
   id: DashboardRole;
   title: string;
   tagline: string;
+  desc: string;
   icon: React.ComponentType<{ className?: string }>;
-}> = [
+}[] = [
   {
     id: "student",
-    title: "Student Dashboard",
-    tagline: "Manage event registrations, QR passes & schedule",
+    title: "Student Participant",
+    tagline: "Event discovery, ticket wallet & live registration passes",
+    desc: "Browse tech, gaming, cultural and workshop tracks, register solo or squad, and keep your offline cryptographic QR pass ready on campus.",
     icon: GraduationCap,
   },
   {
     id: "volunteer",
-    title: "Volunteer Console",
-    tagline: "Operate live Gate Scanner HUD & check-in feeds",
+    title: "Volunteer Scanner",
+    tagline: "Ultra-fast camera HUD & gate verification console",
+    desc: "Point your phone camera at attendee badges at venue gates. Validate HMAC tokens, detect duplicates in real-time, and track gate throughput.",
     icon: QrCode,
   },
   {
     id: "organizer",
-    title: "Organizer Dashboard",
-    tagline: "Create events, track venue capacity & export rosters",
+    title: "Organizer Executive",
+    tagline: "Live telemetry, sector load & master attendee registry",
+    desc: "Command center for Hack4Tech: track headcount across auditorium/halls, audit gate logs, override badge scans, and export CSV reports.",
     icon: LayoutDashboard,
   },
 ];
@@ -47,62 +51,60 @@ const DASHBOARD_OPTIONS: Array<{
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const selectRoleParam = searchParams.get("selectRole") === "1";
+
   const {
     user,
     role,
-    needsRoleSelection,
     loading,
+    needsRoleSelection,
     signIn,
     signUp,
+    resetPassword,
     signInWithGoogle,
     assignRole,
-    resetPassword,
   } = useAuth();
 
-  const initialMode = searchParams.get("mode") === "signup" ? "signup" : "signin";
-  const selectRoleParam = searchParams.get("selectRole") === "1";
-
-  const [mode, setMode] = useState<"signin" | "signup" | "reset">(initialMode);
-  const [selectedDashboard, setSelectedDashboard] = useState<DashboardRole>("student");
-  const [name, setName] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [selectedDashboard, setSelectedDashboard] =
+    useState<DashboardRole>("student");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && user && role && !needsRoleSelection) {
+    if (!loading && user && role && !needsRoleSelection && !selectRoleParam) {
       router.replace(getDashboardPath(role));
     }
-  }, [loading, user, role, needsRoleSelection, router]);
+  }, [user, role, loading, needsRoleSelection, selectRoleParam, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setInfoMsg(null);
     setSubmitting(true);
+
     try {
       if (mode === "signin") {
-        const assigned = await signIn(email.trim(), password);
-        if (assigned) router.replace(getDashboardPath(assigned));
+        const nextRole = await signIn(email.trim(), password);
+        if (nextRole) {
+          router.replace(getDashboardPath(nextRole));
+        }
       } else if (mode === "signup") {
-        const assigned = await signUp(
-          name.trim(),
-          email.trim(),
-          password,
-          selectedDashboard
-        );
-        router.replace(getDashboardPath(assigned));
+        const nextRole = await signUp(name.trim(), email.trim(), password, selectedDashboard);
+        router.replace(getDashboardPath(nextRole));
       } else {
         await resetPassword(email.trim());
-        setInfoMsg("Password reset email sent. Check your inbox.");
+        setInfoMsg(
+          "Password reset link dispatched. Please inspect your campus inbox."
+        );
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Authentication failed. Please try again."
+        err instanceof Error ? err.message : "Authentication encountered an error."
       );
     } finally {
       setSubmitting(false);
@@ -111,12 +113,9 @@ function LoginFormContent() {
 
   const handleGoogle = async () => {
     setError(null);
-    setInfoMsg(null);
     setSubmitting(true);
     try {
-      const assigned = await signInWithGoogle(
-        mode === "signup" ? selectedDashboard : undefined
-      );
+      const assigned = await signInWithGoogle();
       if (assigned) router.replace(getDashboardPath(assigned));
     } catch (err) {
       setError(
@@ -149,9 +148,9 @@ function LoginFormContent() {
       <div className="eh-auth-card">
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <img src="/logo.png" alt="EventHub" className="eh-brand-logo" style={{ width: 44, height: 44, margin: "0 auto 12px" }} />
-          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Assign Your Workspace</h1>
-          <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 6 }}>
-            Welcome, <strong style={{ color: "#fff" }}>{user.displayName || user.email}</strong>. Pick the dashboard role for your account:
+          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "inherit" }}>Assign Your Workspace</h1>
+          <p style={{ color: "var(--color-on-surface, #1c1917)", fontSize: 14, fontWeight: 500, marginTop: 6 }}>
+            Welcome, <strong style={{ color: "var(--color-on-surface, #1c1917)", fontWeight: 700 }}>{user.displayName || user.email}</strong>. Pick the dashboard role for your account:
           </p>
         </div>
 
@@ -178,8 +177,8 @@ function LoginFormContent() {
                     width: 40,
                     height: 40,
                     borderRadius: 10,
-                    background: active ? "var(--g)" : "rgba(255,255,255,0.06)",
-                    color: "#fff",
+                    background: active ? "var(--g)" : "rgba(245,158,11,0.12)",
+                    color: active ? "#171511" : "inherit",
                     display: "inline-flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -189,8 +188,8 @@ function LoginFormContent() {
                   <Icon className="w-5 h-5" />
                 </span>
                 <span>
-                  <strong style={{ display: "block", fontSize: 14.5, color: "#fff" }}>{opt.title}</strong>
-                  <span style={{ display: "block", fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{opt.tagline}</span>
+                  <strong style={{ display: "block", fontSize: 14.5, color: "var(--color-on-surface, #1c1917)" }}>{opt.title}</strong>
+                  <span style={{ display: "block", fontSize: 12, color: "var(--muted, #57534e)", marginTop: 2 }}>{opt.tagline}</span>
                 </span>
               </button>
             );
@@ -221,14 +220,14 @@ function LoginFormContent() {
     <div className="eh-auth-card">
       <div style={{ textAlign: "center", marginBottom: 22 }}>
         <img src="/logo.png" alt="EventHub" className="eh-brand-logo" style={{ width: 44, height: 44, margin: "0 auto 10px" }} />
-        <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, color: "inherit" }}>
           {mode === "signin"
             ? "Sign in to EventHub"
             : mode === "signup"
               ? "Create your account"
               : "Reset your password"}
         </h1>
-        <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 6 }}>
+        <p style={{ color: "var(--muted, #57534e)", fontSize: 13.5, marginTop: 6 }}>
           {mode === "signin"
             ? "Access your digital QR passes and assigned workspace."
             : mode === "signup"
@@ -243,8 +242,8 @@ function LoginFormContent() {
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 6,
-            background: "rgba(9, 7, 18, 0.7)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(0,0,0,0.05)",
+            border: "1px solid rgba(245,158,11,0.25)",
             padding: 4,
             borderRadius: 999,
             marginBottom: 22,
@@ -255,7 +254,7 @@ function LoginFormContent() {
             onClick={() => { setMode("signin"); setError(null); }}
             style={{
               background: mode === "signin" ? "var(--g)" : "transparent",
-              color: mode === "signin" ? "#fff" : "var(--muted)",
+              color: mode === "signin" ? "#171511" : "var(--muted, #57534e)",
               border: 0,
               borderRadius: 999,
               padding: "9px 14px",
@@ -271,7 +270,7 @@ function LoginFormContent() {
             onClick={() => { setMode("signup"); setError(null); }}
             style={{
               background: mode === "signup" ? "var(--g)" : "transparent",
-              color: mode === "signup" ? "#fff" : "var(--muted)",
+              color: mode === "signup" ? "#171511" : "var(--muted, #57534e)",
               border: 0,
               borderRadius: 999,
               padding: "9px 14px",
@@ -292,14 +291,14 @@ function LoginFormContent() {
       )}
 
       {infoMsg && (
-        <div style={{ background: "rgba(52,211,153,.15)", border: "1px solid rgba(52,211,153,.45)", color: "#6ee7b7", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
+        <div style={{ background: "rgba(52,211,153,.15)", border: "1px solid rgba(52,211,153,.45)", color: "#10b981", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
           {infoMsg}
         </div>
       )}
 
       {mode === "signup" && (
         <div style={{ marginBottom: 18 }}>
-          <label style={{ display: "block", fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)", marginBottom: 8 }}>
+          <label style={{ display: "block", fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted, #57534e)", marginBottom: 8 }}>
             Assign Workspace Role
           </label>
           <div className="eh-role-grid">
@@ -327,7 +326,7 @@ function LoginFormContent() {
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {mode === "signup" && (
           <div>
-            <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "#d4cee8", marginBottom: 6 }}>
+            <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "var(--color-on-surface-variant, #57534e)", marginBottom: 6 }}>
               Full Name
             </label>
             <input
@@ -336,13 +335,13 @@ function LoginFormContent() {
               className="eh-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Alex Chen"
+              placeholder="Full Name"
             />
           </div>
         )}
 
         <div>
-          <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "#d4cee8", marginBottom: 6 }}>
+          <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "var(--color-on-surface-variant, #57534e)", marginBottom: 6 }}>
             Campus Email
           </label>
           <input
@@ -358,12 +357,12 @@ function LoginFormContent() {
         {mode !== "reset" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-              <label style={{ fontSize: 12.5, fontWeight: 600, color: "#d4cee8" }}>Password</label>
+              <label style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-on-surface-variant, #57534e)" }}>Password</label>
               {mode === "signin" && (
                 <button
                   type="button"
                   onClick={() => { setMode("reset"); setError(null); }}
-                  style={{ background: "none", border: 0, color: "#c084fc", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                  style={{ background: "none", border: 0, color: "#d97706", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                 >
                   Forgot?
                 </button>
@@ -408,9 +407,9 @@ function LoginFormContent() {
       {mode !== "reset" && (
         <>
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
-            <span style={{ fontSize: 11.5, color: "var(--muted)", textTransform: "uppercase" }}>or</span>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
+            <div style={{ flex: 1, height: 1, background: "rgba(245,158,11,0.2)" }} />
+            <span style={{ fontSize: 11.5, color: "var(--muted, #57534e)", textTransform: "uppercase" }}>or</span>
+            <div style={{ flex: 1, height: 1, background: "rgba(245,158,11,0.2)" }} />
           </div>
 
           <button
@@ -435,7 +434,7 @@ function LoginFormContent() {
         <button
           type="button"
           onClick={() => { setMode("signin"); setError(null); }}
-          style={{ background: "none", border: 0, color: "var(--muted)", fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%", textAlign: "center" }}
+          style={{ background: "none", border: 0, color: "var(--muted, #57534e)", fontSize: 13, marginTop: 16, cursor: "pointer", width: "100%", textAlign: "center" }}
         >
           ← Back to Sign In
         </button>
@@ -461,7 +460,7 @@ export default function LoginPage() {
         <Suspense
           fallback={
             <div style={{ padding: 48 }}>
-              <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#c084fc" }} />
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#f59e0b" }} />
             </div>
           }
         >

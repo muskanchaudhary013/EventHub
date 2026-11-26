@@ -6,12 +6,12 @@ import { Moon, Sun } from "lucide-react";
 type ThemeMode = "dark" | "light";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [theme, setTheme] = useState<ThemeMode>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = (localStorage.getItem("eh-theme") as ThemeMode | null) || "dark";
-    const initial: ThemeMode = saved === "light" ? "light" : "dark";
+    const saved = (localStorage.getItem("eh-theme") as ThemeMode | null) || "light";
+    const initial: ThemeMode = saved === "dark" ? "dark" : "light";
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
     setMounted(true);
