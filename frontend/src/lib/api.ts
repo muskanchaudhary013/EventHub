@@ -1,0 +1,102 @@
+import { EventItem, DigitalPass, ScanLogEntry, AttendeeRecord, INITIAL_EVENTS, INITIAL_PASSES, INITIAL_SCAN_LOGS, INITIAL_ATTENDEES } from "./eventhub-data";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+/**
+ * Safe fetch helper with graceful fallback to initial static mock data
+ * when the backend API server is unreachable.
+ */
+async function safeFetch<T>(endpoint: string, options?: RequestInit, fallbackData?: T): Promise<T> {
+  try {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+      },
+      ...options,
+    });
+
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status} ${res.statusText}`);
+    }
+
+    const json = await res.json();
+    return (json.data ?? json) as T;
+  } catch (error) {
+    if (fallbackData !== undefined) {
+      return fallbackData;
+    }
+    throw error;
+  }
+}
+
+export const api = {
+  // Events
+  async getEvents(category?: string, day?: string): Promise<EventItem[]> {
+    const params = new URLSearchParams();
+    if (category && category !== "all") params.append("category", category);
+    if (day && day !== "all") params.append("day", day);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    return safeFetch<EventItem[]>(`/events${qs}`, { method: "GET" }, INITIAL_EVENTS);
+  },
+
+  async getEventById(id: string): Promise<EventItem | null> {
+    return safeFetch<EventItem | null>(`/events/${id}`, { method: "GET" }, INITIAL_EVENTS.find((e) => e.id === id || e.trackCode === id) || null);
+  },
+
+  // Passes
+  async getPasses(email?: string, userUid?: string): Promise<DigitalPass[]> {
+    const params = new URLSearchParams();
+    if (email) params.append("email", email);
+    if (userUid) params.append("userUid", userUid);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    return safeFetch<DigitalPass[]>(`/passes${qs}`, { method: "GET" }, INITIAL_PASSES);
+  },
+
+  async createPass(data: Partial<DigitalPass> & { eventTitle: string; holderName: string; holderEmail: string }): Promise<DigitalPass> {
+    return safeFetch<DigitalPass>("/passes", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Scans & Verification (Volunteers)
+  async getScanLogs(): Promise<ScanLogEntry[]> {
+    return safeFetch<ScanLogEntry[]>("/scans", { method: "GET" }, INITIAL_SCAN_LOGS);
+  },
+
+  async scanPass(passCode: string, gateLocation = "Gate 1"): Promise<{ success: boolean; status: string; message: string }> {
+    return safeFetch("/scans", {
+      method: "POST",
+      body: JSON.stringify({ passCode, gateLocation }),
+    });
+  },
+
+  // Attendees & Gate Manifest (Organizers / Volunteers)
+  async getAttendees(event?: string, status?: string): Promise<AttendeeRecord[]> {
+    const params = new URLSearchParams();
+    if (event && event !== "all") params.append("event", event);
+    if (status && status !== "all") params.append("status", status);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    return safeFetch<AttendeeRecord[]>(`/attendees${qs}`, { method: "GET" }, INITIAL_ATTENDEES);
+  },
+
+  // Users & Sync
+  async syncUser(userData: { firebaseUid: string; email: string; name?: string; role?: string; college?: string }) {
+    return safeFetch("/users/sync", {
+      method: "POST",
+      body: JSON.stringify(userData),
+    });
+  },
+
+  async getDashboardStats() {
+    return safeFetch("/users/stats/overview", { method: "GET" }, {
+      totalEvents: 7,
+      totalPasses: 248,
+      checkedInCount: 142,
+      pendingCount: 106,
+      totalScans: 198,
+      attendanceRate: "57%",
+    });
+  },
+};
