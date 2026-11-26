@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -21,6 +21,8 @@ import { PublicFooter } from "@/components/PublicFooter";
 import { QrCodeSvg } from "@/components/QrCodeSvg";
 import { useAuth } from "@/context/AuthContext";
 import { useEventHub } from "@/context/EventHubContext";
+import { DigitalPass } from "@/lib/eventhub-data";
+import { api } from "@/lib/api";
 import "../home.css";
 
 function DigitalPassesContent() {

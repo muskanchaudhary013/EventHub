@@ -42,6 +42,8 @@ export interface EventItem {
 
 export interface DigitalPass {
   id: string;
+  eventId?: string;
+  userUid?: string;
   passCode: string;
   qrToken?: string;
   checkInTime?: string;
