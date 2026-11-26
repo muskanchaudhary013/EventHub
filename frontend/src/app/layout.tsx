@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { EventHubProvider } from "@/context/EventHubContext";
 import "./globals.css";
@@ -15,6 +15,13 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -39,7 +46,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable}`}
     >
       <body className="bg-background text-on-surface font-sans antialiased selection:bg-primary-container/20 selection:text-primary">
         <AuthProvider>
