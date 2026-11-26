@@ -212,7 +212,7 @@ export function OpsShell({
             <ThemeToggle />
             <Link
               href="/passes#retrieve"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/15 text-[12.5px] font-semibold text-amber-800 dark:text-amber-200 hover:bg-amber-500/25 transition-all whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/15 text-[12.5px] font-semibold text-amber-800 dark:text-amber-200 hover:bg-amber-500/25 transition-all whitespace-nowrap shrink-0"
             >
               <Search className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden md:inline">Find Pass</span>
