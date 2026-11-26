@@ -326,20 +326,22 @@ export default function EventDiscoveryPage() {
                         </div>
 
                         <div className="eh-featured-footer">
-                          <span className="eh-seats-label">
-                            <Users className="w-4 h-4" style={{ color: "#c084fc" }} />
-                            {activeEvent.registeredCount}/{activeEvent.capacityCount} Seats
-                          </span>
-                          <button
-                            type="button"
+                          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                            <span className="eh-seats-label">
+                              <Users className="w-4 h-4" style={{ color: "#c084fc" }} />
+                              {activeEvent.registeredCount}/{activeEvent.capacityCount} Seats
+                            </span>
+                            <span style={{ fontSize: 14, fontWeight: 700, color: "#c084fc" }}>
+                              Fee: {activeEvent.feeLabel}
+                            </span>
+                          </div>
+                          <Link
+                            href={`/register/${activeEvent.id}`}
                             className="eh-btn-primary"
-                            onClick={() => {
-                              if (!didDrag.current) setSelected(activeEvent);
-                            }}
                           >
                             View Event
                             <ArrowRight className="w-4 h-4" />
-                          </button>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -491,18 +493,22 @@ export default function EventDiscoveryPage() {
                     </div>
 
                     <div className="eh-card-foot">
-                      <span className="eh-seats-label" style={{ fontSize: 12.5 }}>
-                        <Users className="w-3.5 h-3.5" style={{ color: "#a855f7" }} />
-                        {e.registeredCount}/{e.capacityCount} Seats
-                      </span>
-                      <button
-                        type="button"
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <span className="eh-seats-label" style={{ fontSize: 12 }}>
+                          <Users className="w-3.5 h-3.5" style={{ color: "#a855f7" }} />
+                          {e.registeredCount}/{e.capacityCount} Seats
+                        </span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#c084fc" }}>
+                          {e.feeLabel}
+                        </span>
+                      </div>
+                      <Link
+                        href={`/register/${e.id}`}
                         className="eh-btn-outline"
-                        onClick={() => setSelected(e)}
                       >
-                        View Details
+                        Register
                         <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </article>

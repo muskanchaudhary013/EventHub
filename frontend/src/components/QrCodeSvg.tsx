@@ -1,109 +1,276 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
+import QRCode from "qrcode";
+import { Download, FileText, Check } from "lucide-react";
+import { DigitalPass } from "@/lib/eventhub-data";
 
 interface QrCodeSvgProps {
-  size?: "sm" | "lg";
+  value?: string;
+  size?: number | "sm" | "lg";
   seed?: string;
+  className?: string;
+  showActions?: boolean;
+  pass?: DigitalPass;
+  downloadName?: string;
 }
 
-export function QrCodeSvg({ size = "lg", seed = "EH-2025-HCK-9481" }: QrCodeSvgProps) {
-  // Deterministic small bit variation based on pass seed while keeping the exact Stitch QR look
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = (hash * 31 + seed.charCodeAt(i)) % 997;
-  }
+export function QrCodeSvg({
+  value,
+  size = "lg",
+  seed = "EH-2026-HCK-9481",
+  className = "",
+  showActions = false,
+  pass,
+  downloadName,
+}: QrCodeSvgProps) {
+  // Use value if provided, otherwise fallback to seed
+  const qrData = value || seed;
 
-  if (size === "sm") {
-    return (
-      <svg
-        className="w-full h-full text-on-surface"
-        fill="currentColor"
-        viewBox="0 0 40 40"
-        aria-label={`QR Code for ${seed}`}
-      >
-        <rect height="12" rx="2" width="12" x="2" y="2" />
-        <rect fill="#FFFFFF" height="8" width="8" x="4" y="4" />
-        <rect height="4" width="4" x="6" y="6" />
-        <rect height="12" rx="2" width="12" x="26" y="2" />
-        <rect fill="#FFFFFF" height="8" width="8" x="28" y="4" />
-        <rect height="4" width="4" x="30" y="6" />
-        <rect height="12" rx="2" width="12" x="2" y="26" />
-        <rect fill="#FFFFFF" height="8" width="8" x="4" y="28" />
-        <rect height="4" width="4" x="6" y="30" />
-        <circle cx="20" cy="20" r="3" fill="#FF5A5F" />
-        <rect height="8" width="4" x="18" y="6" />
-        <rect height="4" width="12" x="26" y="22" />
-        <rect height="10" width="4" x="18" y="28" />
-        <rect height="6" width="8" x="26" y="32" />
-      </svg>
-    );
-  }
+  const [dataUrl, setDataUrl] = useState<string>("");
+  const [copied, setCopied] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const toggle = hash % 2 === 0;
+  // Compute pixel dimension based on size prop
+  const pixelSize =
+    typeof size === "number" ? size : size === "sm" ? 80 : 180;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    QRCode.toDataURL(qrData, {
+      width: pixelSize * 2, // High resolution for sharp rendering
+      margin: 1.5,
+      color: {
+        dark: "#000000",
+        light: "#FFFFFF",
+      },
+      errorCorrectionLevel: "M",
+    })
+      .then((url) => {
+        if (isMounted) setDataUrl(url);
+      })
+      .catch((err) => {
+        console.error("Failed to generate QR code", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [qrData, pixelSize]);
+
+  // Download QR Code as PNG image
+  const handleDownloadPng = () => {
+    if (!dataUrl) return;
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = `${downloadName || qrData.replace(/[^a-zA-Z0-9_-]/g, "_")}_QR.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // Download / Print pass as PDF or structured document
+  const handleDownloadPdf = () => {
+    if (!pass) {
+      handleDownloadPng();
+      return;
+    }
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>EventHub Entry Pass - ${pass.passCode}</title>
+          <style>
+            @page { size: A4 portrait; margin: 15mm; }
+            body {
+              font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              color: #0f172a;
+              background: #f8fafc;
+              margin: 0;
+              padding: 20px;
+            }
+            .pass-card {
+              max-width: 540px;
+              margin: 0 auto;
+              background: #ffffff;
+              border-radius: 16px;
+              border: 2px solid #7c3aed;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+              overflow: hidden;
+            }
+            .pass-header {
+              background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+              color: #ffffff;
+              padding: 24px;
+              text-align: center;
+            }
+            .pass-header h1 { margin: 0 0 6px; font-size: 24px; }
+            .pass-header p { margin: 0; opacity: 0.9; font-size: 14px; }
+            .pass-body { padding: 24px; text-align: center; }
+            .qr-image {
+              width: 200px;
+              height: 200px;
+              margin: 0 auto 16px;
+              display: block;
+              border: 1px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 8px;
+            }
+            .pass-code {
+              font-family: monospace;
+              font-size: 20px;
+              font-weight: 700;
+              letter-spacing: 2px;
+              color: #7c3aed;
+              margin-bottom: 20px;
+            }
+            .info-table {
+              width: 100%;
+              text-align: left;
+              border-collapse: collapse;
+              margin-top: 10px;
+              font-size: 14px;
+            }
+            .info-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+            .info-table td.label { font-weight: 600; color: #64748b; width: 40%; }
+            .info-table td.value { font-weight: 700; color: #0f172a; }
+            .footer-note {
+              margin-top: 20px;
+              font-size: 12px;
+              color: #94a3b8;
+              text-align: center;
+              border-top: 1px dashed #cbd5e1;
+              padding-top: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="pass-card">
+            <div class="pass-header">
+              <h1>EVENTHUB VERIFIED ENTRY PASS</h1>
+              <p>${pass.eventTitle}</p>
+            </div>
+            <div class="pass-body">
+              <img src="${dataUrl}" class="qr-image" alt="QR Code" />
+              <div class="pass-code">${pass.passCode}</div>
+              <table class="info-table">
+                <tr><td class="label">Attendee / Leader:</td><td class="value">${pass.holderName}</td></tr>
+                ${pass.teamName && pass.teamName !== "Solo Entrant" ? `<tr><td class="label">Team / Squad:</td><td class="value">${pass.teamName}</td></tr>` : ""}
+                ${pass.teammates && pass.teammates.length > 0 ? `<tr><td class="label">Team Members:</td><td class="value">${pass.teammates.map(t => t.name).join(", ")}</td></tr>` : ""}
+                <tr><td class="label">Dates:</td><td class="value">${pass.dateRange}</td></tr>
+                <tr><td class="label">Venue:</td><td class="value">${pass.venue}</td></tr>
+                <tr><td class="label">Tier / Gate:</td><td class="value">${pass.tierLabel} (${pass.gateTime})</td></tr>
+                <tr><td class="label">Security Token:</td><td class="value">${pass.sigHash}</td></tr>
+              </table>
+              <div class="footer-note">
+                • Present this QR pass at the entrance scanner turnstile for immediate check-in.<br/>
+                • Single authorized entry token. Duplicates will trigger a security flag.
+              </div>
+            </div>
+          </div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
 
   return (
-    <svg
-      className="w-48 h-48 sm:w-52 sm:h-52 text-on-surface"
-      fill="currentColor"
-      viewBox="0 0 100 100"
-      aria-label={`QR Code for ${seed}`}
-    >
-      {/* Top-Left Finder */}
-      <rect height="28" rx="3" width="28" x="5" y="5" />
-      <rect fill="#FFFFFF" height="20" rx="2" width="20" x="9" y="9" />
-      <rect height="12" rx="1.5" width="12" x="13" y="13" />
-      {/* Top-Right Finder */}
-      <rect height="28" rx="3" width="28" x="67" y="5" />
-      <rect fill="#FFFFFF" height="20" rx="2" width="20" x="71" y="9" />
-      <rect height="12" rx="1.5" width="12" x="75" y="13" />
-      {/* Bottom-Left Finder */}
-      <rect height="28" rx="3" width="28" x="5" y="67" />
-      <rect fill="#FFFFFF" height="20" rx="2" width="20" x="9" y="71" />
-      <rect height="12" rx="1.5" width="12" x="13" y="75" />
+    <div className={`flex flex-col items-center ${className}`}>
+      {/* Clean high-contrast QR display container */}
+      <div
+        style={{
+          width: pixelSize + 16,
+          height: pixelSize + 16,
+          background: "#FFFFFF",
+          borderRadius: 14,
+          padding: 8,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.35)",
+          border: "2px solid rgba(168, 85, 247, 0.35)",
+        }}
+      >
+        {dataUrl ? (
+          <img
+            src={dataUrl}
+            alt={`QR Code for ${qrData}`}
+            style={{
+              width: pixelSize,
+              height: pixelSize,
+              display: "block",
+              borderRadius: 6,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: pixelSize,
+              height: pixelSize,
+              background: "#F1F5F9",
+              borderRadius: 6,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#94A3B8",
+              fontSize: 12,
+            }}
+          >
+            Generating QR...
+          </div>
+        )}
+      </div>
 
-      {/* Timing & Matrix Data */}
-      <rect height="4" width="4" x="37" y="10" />
-      <rect height="4" width="4" x="45" y="10" />
-      <rect height="4" width="4" x="53" y="10" />
-      <rect height="4" width="4" x="10" y="37" />
-      <rect height="4" width="4" x="10" y="45" />
-      <rect height="4" width="4" x="10" y="53" />
-      <rect height="8" width="8" x="37" y="37" />
-      <rect height="4" width="4" x="49" y="37" />
-      <rect height="4" width="8" x="57" y="37" />
-      <rect height="8" width="4" x="37" y="49" />
-      <rect height="10" width="10" x="45" y="45" />
-      <rect height="6" width="6" x="59" y="45" />
-      <rect height="4" width="4" x="69" y="37" />
-      <rect height="4" width="8" x="77" y="37" />
-      <rect height="8" width="6" x="89" y="37" />
-      <rect height="4" width="8" x="37" y="61" />
-      <rect height="8" width="4" x="49" y="61" />
-      <rect height="8" width="6" x="57" y="57" />
-      <rect height="4" width="8" x="69" y="49" />
-      <rect height="8" width="4" x="81" y="49" />
-      <rect height="6" width="6" x="69" y="61" />
-      <rect height="4" width="16" x="79" y="61" />
-      <rect height="6" width="6" x="37" y="73" />
-      <rect height="4" width="6" x={toggle ? "47" : "45"} y="73" />
-      <rect height="6" width="6" x="57" y="73" />
-      <rect height="4" width="8" x="37" y="83" />
-      <rect height="8" width="4" x="49" y="81" />
-      <rect height="4" width="8" x="57" y="83" />
-      <rect height="8" width="4" x="69" y="73" />
-      <rect height="4" width="8" x="77" y="73" />
-      <rect height="6" width="6" x="89" y="73" />
-      <rect height="4" width="8" x="69" y="85" />
-      <rect height="8" width="4" x="81" y="81" />
-      <rect height="6" width="6" x="89" y="83" />
-      {toggle ? (
-        <rect height="5" width="5" x="22" y="44" />
-      ) : (
-        <rect height="5" width="5" x="24" y="52" />
+      {/* Action buttons (Download image / Download PDF) */}
+      {showActions && (
+        <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap", justifyContent: "center" }}>
+          <button
+            type="button"
+            onClick={handleDownloadPng}
+            className="eh-back-btn"
+            style={{
+              padding: "7px 14px",
+              fontSize: 12.5,
+              borderRadius: 9999,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+            title="Download QR Code Image"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download QR (PNG)
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            className="eh-back-btn"
+            style={{
+              padding: "7px 14px",
+              fontSize: 12.5,
+              borderRadius: 9999,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+            title="Save or Print Entry Pass PDF"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Download Pass (PDF)
+          </button>
+        </div>
       )}
-
-      {/* Center Coral Punchout Badge */}
-      <circle cx="50" cy="50" fill="#FF5A5F" r="10" />
-      <polygon fill="#FFFFFF" points="46,45 56,50 46,55" />
-    </svg>
+    </div>
   );
 }

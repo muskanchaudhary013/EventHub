@@ -34,6 +34,9 @@ interface EventHubContextValue {
     holderEmail: string;
     isTeam: boolean;
     teamName?: string;
+    holderPhone?: string;
+    teammatesList?: Array<{ name: string; phone?: string; role?: string }>;
+    paymentMethod?: string;
   }) => DigitalPass;
   addEvent: (event: EventItem) => void;
   addScanLog: (entry: ScanLogEntry) => void;
@@ -72,10 +75,11 @@ export function EventHubProvider({ children }: { children: React.ReactNode }) {
     holderEmail,
     isTeam,
     teamName,
+    teammatesList,
   }) => {
     const suffix = Math.floor(1000 + Math.random() * 9000);
     const prefix = event.trackCode.split("-")[0] || "EVT";
-    const passCode = `EH-2025-${prefix}-${suffix}`;
+    const passCode = `EH-2026-${prefix}-${suffix}`;
     const newPass: DigitalPass = {
       id: `pass-${Date.now()}`,
       passCode,
@@ -88,15 +92,21 @@ export function EventHubProvider({ children }: { children: React.ReactNode }) {
       teamName: isTeam ? teamName || "Campus Squad" : "Solo Entrant",
       booth: `Desk #${String.fromCharCode(65 + (suffix % 6))}-${(suffix % 24) + 1}`,
       tierLabel: isTeam
-        ? "Squad Accredited · Fast Track"
+        ? `${(teammatesList?.length || 2) + 1} Member Squad · Fast Track`
         : "Solo Participant · Verified .EDU",
       holderName: holderName || "Alex Rivera",
-      holderEmail: holderEmail || "arivera@cs.stanford.edu",
+      holderEmail: holderEmail || "alex.chen@campus.edu",
       teammates: isTeam
-        ? [
-            { name: "Samira Lin", role: "Systems Eng", icon: "terminal" },
-            { name: "Devon Brooks", role: "Product Design", icon: "palette" },
-          ]
+        ? teammatesList && teammatesList.length > 0
+          ? teammatesList.map((m, idx) => ({
+              name: m.name || `Teammate ${idx + 1}`,
+              role: m.role || "Member",
+              icon: (idx % 2 === 0 ? "terminal" : "palette") as "terminal" | "palette",
+            }))
+          : [
+              { name: "Samira Lin", role: "Systems Eng", icon: "terminal" },
+              { name: "Devon Brooks", role: "Product Design", icon: "palette" },
+            ]
         : [],
       countdownLabel: "Instant Gate Ready",
       sigHash: `sha256:${suffix.toString(16)}9a3c9e...${(suffix * 7).toString(16).slice(0, 6)}`,

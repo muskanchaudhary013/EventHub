@@ -19,6 +19,9 @@ export interface EventItem {
   teamSpec: string;
   teamType: "solo" | "team" | "both";
   entryType: "free" | "paid";
+  feeNumeric: number;
+  feeLabel: string;
+  maxTeamMembers?: number;
   prizeLabel: string;
   prizeTone: "primary" | "tertiary" | "neutral";
   registeredCount: number;
@@ -34,6 +37,7 @@ export interface EventItem {
   imageUrl: string;
   featured?: boolean;
   organizerNote?: string;
+  perks?: string[];
 }
 
 export interface DigitalPass {
@@ -96,6 +100,160 @@ export const ALEX_AVATAR_URL =
 
 export const INITIAL_EVENTS: EventItem[] = [
   {
+    id: "ai-build-a-thon",
+    trackCode: "HACK-AI-00",
+    title: "AI Build-a-thon",
+    subtitle: "Think. Build. Innovate.",
+    description:
+      "Build innovative solutions using AI and showcase your skills! Mentorship, cloud compute, and fast-track evaluation for top student teams.",
+    category: "hackathon",
+    categoryLabel: "Hackathon",
+    statusBadge: "Popular",
+    statusTone: "amber",
+    teamSpec: "Solo or Squad (up to 3)",
+    teamType: "both",
+    entryType: "paid",
+    feeNumeric: 299,
+    feeLabel: "₹299",
+    maxTeamMembers: 3,
+    prizeLabel: "Prize Pool: ₹1,50,000",
+    prizeTone: "primary",
+    registeredCount: 120,
+    capacityCount: 200,
+    quotaLabel: "Allocation Manifest",
+    quotaUnit: "Seats",
+    progressColor: "bg-primary-container",
+    dateShort: "24 Nov 2026",
+    dateFilter: "fri",
+    dateFull: "24 Nov 2026",
+    venue: "Seminar Hall, GLA",
+    ctaLabel: "Register Solo or Squad",
+    imageUrl:
+      "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80",
+    featured: true,
+    organizerNote:
+      "Organized by Hack4Tech & Department of Computer Applications, GLA University.",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
+  },
+  {
+    id: "tech-talks",
+    trackCode: "TALK-AI-01",
+    title: "Tech Talks: Generative AI & Systems",
+    subtitle: "Learn. Grow. Innovate.",
+    description:
+      "Distinguished keynotes and deep-dive technical sessions by Silicon Valley architects and research fellows.",
+    category: "hackathon",
+    categoryLabel: "Talk",
+    statusBadge: "Limited Seats",
+    statusTone: "amber",
+    teamSpec: "Solo Attendee",
+    teamType: "solo",
+    entryType: "paid",
+    feeNumeric: 99,
+    feeLabel: "₹99",
+    maxTeamMembers: 1,
+    prizeLabel: "Verified Certificate",
+    prizeTone: "tertiary",
+    registeredCount: 80,
+    capacityCount: 100,
+    quotaLabel: "Auditorium Seats",
+    quotaUnit: "Seats",
+    progressColor: "bg-primary-container",
+    dateShort: "22 Nov 2026",
+    dateFilter: "fri",
+    dateFull: "22 Nov 2026",
+    venue: "Auditorium, GLA",
+    ctaLabel: "Register for Talk",
+    imageUrl:
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    featured: false,
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
+  },
+  {
+    id: "web-dev-workshop",
+    trackCode: "WKP-DEV-02",
+    title: "Web Dev Workshop: Full-Stack Modern Apps",
+    subtitle: "Hands-on Lab",
+    description:
+      "Build and deploy production-grade Next.js, Node.js, and cloud backend microservices in an interactive hands-on lab.",
+    category: "design",
+    categoryLabel: "Workshop",
+    statusBadge: "Hands-on",
+    statusTone: "emerald",
+    teamSpec: "Solo or Duo",
+    teamType: "both",
+    entryType: "paid",
+    feeNumeric: 149,
+    feeLabel: "₹149",
+    maxTeamMembers: 2,
+    prizeLabel: "Badge & Swag",
+    prizeTone: "tertiary",
+    registeredCount: 50,
+    capacityCount: 60,
+    quotaLabel: "Lab Capacity",
+    quotaUnit: "Seats",
+    progressColor: "bg-secondary-container",
+    dateShort: "26 Nov 2026",
+    dateFilter: "sat",
+    dateFull: "26 Nov 2026",
+    venue: "LAB-2, GLA",
+    ctaLabel: "Register for Workshop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+    featured: false,
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
+  },
+  {
+    id: "code-combat",
+    trackCode: "CMP-ALG-03",
+    title: "Code Combat: Algorithmic Duel",
+    subtitle: "Solve. Compete. Win.",
+    description:
+      "Fast-paced competitive programming showdown testing algorithms, data structures, and optimization speed.",
+    category: "hackathon",
+    categoryLabel: "Competition",
+    statusBadge: "Closing Soon",
+    statusTone: "crimson",
+    teamSpec: "Solo or Duo",
+    teamType: "both",
+    entryType: "paid",
+    feeNumeric: 199,
+    feeLabel: "₹199",
+    maxTeamMembers: 2,
+    prizeLabel: "Prize Pool: ₹50,000",
+    prizeTone: "primary",
+    registeredCount: 45,
+    capacityCount: 100,
+    quotaLabel: "Arena Slots",
+    quotaUnit: "Seats",
+    progressColor: "bg-error",
+    dateShort: "28 Nov 2026",
+    dateFilter: "sat",
+    dateFull: "28 Nov 2026",
+    venue: "Seminar Hall, GLA",
+    ctaLabel: "Register for Combat",
+    imageUrl:
+      "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?auto=format&fit=crop&w=1200&q=80",
+    featured: false,
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
+  },
+  {
     id: "hackcampus-2026",
     trackCode: "HACK-AI-01",
     title: "HackCampus 2026: 36-Hour AI Hackathon",
@@ -108,7 +266,10 @@ export const INITIAL_EVENTS: EventItem[] = [
     statusTone: "amber",
     teamSpec: "Teams of 2-4",
     teamType: "both",
-    entryType: "free",
+    entryType: "paid",
+    feeNumeric: 299,
+    feeLabel: "₹299",
+    maxTeamMembers: 4,
     prizeLabel: "Prize Pool: $12,500",
     prizeTone: "tertiary",
     registeredCount: 186,
@@ -126,6 +287,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     featured: true,
     organizerNote:
       "Presented by Department of Computer Science & Engineering in partnership with OpenAI Campus Fellowship & GitHub Education.",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "robowars-2026",
@@ -141,6 +307,9 @@ export const INITIAL_EVENTS: EventItem[] = [
     teamSpec: "Heavyweight & Featherweight",
     teamType: "team",
     entryType: "paid",
+    feeNumeric: 499,
+    feeLabel: "₹499",
+    maxTeamMembers: 4,
     prizeLabel: "Prize: $5,000",
     prizeTone: "primary",
     registeredCount: 29,
@@ -155,6 +324,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     ctaLabel: "Get Combat Pass",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBdcxfi8UoP4-EpPyKOGruUCok84QD4cijohgRlt3EAFQMdADIiZ-zrx7NUC_arzuf16jsM1_hex95YODGxv9B7X3XHg4I1ZlSSCNgPlWZlComBiAluQHVXIzd_p__Z4G1lkue7mGeBxKkbNpszYT8g8WGYaQTMMm2L4DGgP6n7mZ7BqSNW6TzpyOBX6cHSWMh6Y1jv15sVrztTwshT8PSVMhyI6HiWTNBJ0SyZfNs",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "pixelcraft-sprint",
@@ -169,7 +343,10 @@ export const INITIAL_EVENTS: EventItem[] = [
     statusTone: "crimson",
     teamSpec: "Solo or Duo",
     teamType: "both",
-    entryType: "free",
+    entryType: "paid",
+    feeNumeric: 199,
+    feeLabel: "₹199",
+    maxTeamMembers: 2,
     prizeLabel: "Prize: $3,200",
     prizeTone: "tertiary",
     registeredCount: 92,
@@ -184,6 +361,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     ctaLabel: "Get Sprint Pass",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAFCv89F8T4sBB4McBumECiaiYChqxPdCf5BSUyP26YKkPqZBsRAwPebdhP8X4sdcHltqnATnHqc1T31x00zq8ypy8UwEIgNEVgtY7OVbxUFHz5r5hU34-bkL9YOuInnuUxNDI7orgV5XFa-G9F9A1KZDK-rBcAeCwFn46bNlEJ5HNfhf_o-wQWu_xHSsf78FBphu_9oFJkE567WCun7I05WkfJrDewxFELXS7ID4c",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "battle-of-the-bands",
@@ -199,6 +381,9 @@ export const INITIAL_EVENTS: EventItem[] = [
     teamSpec: "Audience & Band Registrations",
     teamType: "both",
     entryType: "free",
+    feeNumeric: 0,
+    feeLabel: "Free",
+    maxTeamMembers: 6,
     prizeLabel: "Free Student Pass",
     prizeTone: "neutral",
     registeredCount: 128,
@@ -213,6 +398,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     ctaLabel: "Get Free Pass",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCn3ww7fZqMoN6JEP9guLkJJb80Xysp7SGVuM13B_Q-j5I3SJMLqAJPvULh4EbYW5pFW3VH9zPv8RkaSitEkiw450ve3pRlWdaehYHRoqH1Oe6n3OZ1nNVKacn7poHtRsyYf73OzO3qeHMIWHrr5d6o8DyLGKyOjeWZeJUMeCNqPmWcd2Nkuh9emq5Z1TFmyz0gr_4S46QgNayVWTdZp2Pt3CmVJuA8-LgwxYCUZw4",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "promptcraft-genai",
@@ -227,7 +417,10 @@ export const INITIAL_EVENTS: EventItem[] = [
     statusTone: "neutral",
     teamSpec: "Solo Competitor",
     teamType: "solo",
-    entryType: "free",
+    entryType: "paid",
+    feeNumeric: 149,
+    feeLabel: "₹149",
+    maxTeamMembers: 1,
     prizeLabel: "Prize: $2,500",
     prizeTone: "tertiary",
     registeredCount: 44,
@@ -242,6 +435,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     ctaLabel: "Get Pass",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ18CnS5Tdawp2ceLAdCVZSEYtAGF9CRuL-8xu3B5dsBpxSWJQcRICIw87ruva1AM3CdW2EZWkc5ZBBzoFwc8FaeFr1UvDfByGDds9zo58rasx2oPwOIz2wvuaDYuWnQ-JtrcV_Q5c9YG-nBqBF5LBE7BSh6B2psOHJBwMy7Q2z6ECvySNVDO7DIV9UXem3-Do0lIduPhLHb7V9HVHw7LQe6F1juKH92wsJercL2U",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "valorant-invitational",
@@ -257,6 +455,9 @@ export const INITIAL_EVENTS: EventItem[] = [
     teamSpec: "Teams of 5 + 1 Sub",
     teamType: "team",
     entryType: "paid",
+    feeNumeric: 599,
+    feeLabel: "₹599",
+    maxTeamMembers: 6,
     prizeLabel: "Prize: $4,000",
     prizeTone: "primary",
     registeredCount: 14,
@@ -271,6 +472,11 @@ export const INITIAL_EVENTS: EventItem[] = [
     ctaLabel: "Register Squad",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuA1wWGiOCh8GQcr5lEeD-s9D_MDWDWblUGHYCF_zQpmmQp9sJpqUKGv3pBSfc5DNW5XYMVDb67p0l4UrJ85j4_oGswA_GgYJXb0UiGv1Lk1kIx7vSASMIteqm7gVc6KBUQIn-PqMfPBccOKEUg3Uf8P7DbH5zr2cvRV3GGYiLt423Aaor_2Iq948166Z0VhT1DRwbSvT1TWbWg8pade6AXrnY7qdmb8XhMVq1hSr40",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
   },
   {
     id: "keynote-dr-thorne",
@@ -286,6 +492,9 @@ export const INITIAL_EVENTS: EventItem[] = [
     teamSpec: "General Student RSVP",
     teamType: "solo",
     entryType: "free",
+    feeNumeric: 0,
+    feeLabel: "Free",
+    maxTeamMembers: 1,
     prizeLabel: "Certificate Issued",
     prizeTone: "tertiary",
     registeredCount: 410,
@@ -299,6 +508,14 @@ export const INITIAL_EVENTS: EventItem[] = [
     venue: "Kavli Auditorium",
     ctaLabel: "RSVP Keynote Pass",
     imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAZlGwD1bnh8JU5r6rEoHwS7Q-8NpAwYpfK58mf_ci9X3kI6aNr8gQ3UrWtFUfXg_8TUHBxUV_Ue-7WafxA6nWV9E_xGoazaAPc8X22hSZJ3MHEI8DIXfwQVYXYJKBumwxyIBgYysxOiw--QfLa4ZpqUQUBFYe9moQUyvrMTdvqBdrEPkZHBoKZNOB34v20qCyCYG3AUPjn8nitGn-XXYVZUJlLt2wJNkpmY18muJg",
+    perks: [
+      "Get your QR Pass",
+      "Access event updates",
+      "Join the Hack4Tech community!",
+    ],
+  },
+];
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAZlGwD1bnh8JU5r6rEoHwS7Q-8NpAwYpfK58mf_ci9X3kI6aNr8gQ3UrWtFUfXg_8TUHBxUV_Ue-7WafxA6nWV9E_xGoazaAPc8X22hSZJ3MHEI8DIXfwQVYXYJKBumwxyIBgYysxOiw--QfLa4ZpqUQUBFYe9moQUyvrMTdvqBdrEPkZHBoKZNOB34v20qCyCYG3AUPjn8nitGn-XXYVZUJlLt2wJNkpmY18muJg",
   },
 ];
