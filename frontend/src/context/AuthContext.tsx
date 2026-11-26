@@ -19,6 +19,7 @@ import {
   initFirebaseAnalytics,
   isFirebaseConfigured,
 } from "@/lib/firebase";
+import { api } from "@/lib/api";
 
 export type DashboardRole = "student" | "volunteer" | "organizer";
 
@@ -45,28 +46,57 @@ export function getDashboardLabel(role: DashboardRole): string {
 }
 
 const ROLE_STORAGE_PREFIX = "eventhub_role_";
+const LAST_ACTIVE_ROLE_KEY = "eventhub_last_role";
 
 function isValidRole(value: unknown): value is DashboardRole {
   return value === "student" || value === "volunteer" || value === "organizer";
+}
+
+function getLocalRole(uid?: string): DashboardRole | null {
+  if (typeof window === "undefined") return null;
+  try {
+    if (uid) {
+      const specific = window.localStorage.getItem(`${ROLE_STORAGE_PREFIX}${uid}`);
+      if (isValidRole(specific)) return specific;
+    }
+    const last = window.localStorage.getItem(LAST_ACTIVE_ROLE_KEY);
+    if (isValidRole(last)) return last;
+  } catch {
+    // ignore storage quota / sandbox errors
+  }
+  return null;
+}
+
+function saveLocalRole(uid: string, assignedRole: DashboardRole) {
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(`${ROLE_STORAGE_PREFIX}${uid}`, assignedRole);
+      window.localStorage.setItem(LAST_ACTIVE_ROLE_KEY, assignedRole);
+    } catch {
+      // ignore
+    }
+  }
 }
 
 async function persistUserRole(
   user: User,
   assignedRole: DashboardRole
 ): Promise<void> {
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(`${ROLE_STORAGE_PREFIX}${user.uid}`, assignedRole);
-    } catch {
-      // ignore storage quota errors
-    }
-  }
+  saveLocalRole(user.uid, assignedRole);
+
+  // Background sync to backend API (safe and non-blocking)
+  api.syncUser({
+    firebaseUid: user.uid,
+    email: user.email || "",
+    name: user.displayName || "",
+    role: assignedRole,
+  }).catch(() => {});
 
   const db = getFirebaseDb();
   if (!db) return;
 
   try {
-    await setDoc(
+    const writePromise = setDoc(
       doc(db, "users", user.uid),
       {
         uid: user.uid,
@@ -77,34 +107,34 @@ async function persistUserRole(
       },
       { merge: true }
     );
+    // Strict 1.2s timeout so the promise never hangs waiting on Firestore
+    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1200));
+    await Promise.race([writePromise, timeoutPromise]);
   } catch {
     // Firestore rules or database may not be enabled yet; localStorage fallback remains active
   }
 }
 
 async function fetchUserRole(uid: string): Promise<DashboardRole | null> {
+  // Check local cache first for instant resolution
+  const local = getLocalRole(uid);
+  if (local) return local;
+
   const db = getFirebaseDb();
   if (db) {
     try {
-      const snap = await getDoc(doc(db, "users", uid));
-      if (snap.exists()) {
+      const getPromise = getDoc(doc(db, "users", uid));
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 1200));
+      const snap = await Promise.race([getPromise, timeoutPromise]);
+      if (snap && "exists" in snap && snap.exists()) {
         const data = snap.data();
         if (isValidRole(data?.role)) {
-          if (typeof window !== "undefined") {
-            window.localStorage.setItem(`${ROLE_STORAGE_PREFIX}${uid}`, data.role);
-          }
+          saveLocalRole(uid, data.role);
           return data.role;
         }
       }
     } catch {
-      // fall through to local cache
-    }
-  }
-
-  if (typeof window !== "undefined") {
-    const cached = window.localStorage.getItem(`${ROLE_STORAGE_PREFIX}${uid}`);
-    if (isValidRole(cached)) {
-      return cached;
+      // fall through
     }
   }
 
@@ -136,7 +166,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<DashboardRole | null>(null);
+  const [role, setRole] = useState<DashboardRole | null>(() => getLocalRole());
   const [needsRoleSelection, setNeedsRoleSelection] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -152,17 +182,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        const savedRole = await fetchUserRole(firebaseUser.uid);
-        setRole(savedRole);
-        setNeedsRoleSelection(!savedRole);
+        // 1. Instant check from local cache to immediately unblock the UI with zero delay
+        const cached = getLocalRole(firebaseUser.uid);
+        if (cached) {
+          setRole(cached);
+          setNeedsRoleSelection(false);
+          setLoading(false); // Unblock UI immediately!
+        }
+
+        // 2. Query remote Firestore in background (or if no cache)
+        fetchUserRole(firebaseUser.uid)
+          .then((remoteRole) => {
+            if (remoteRole) {
+              setRole(remoteRole);
+              setNeedsRoleSelection(false);
+            } else if (!cached) {
+              setRole(null);
+              setNeedsRoleSelection(true);
+            }
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
       } else {
         setRole(null);
         setNeedsRoleSelection(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Safety fallback: never keep user stuck on loading spinner for more than 2.5s
+    const safetyTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => {
+      clearTimeout(safetyTimeout);
+      unsubscribe();
+    };
   }, []);
 
   const requireAuth = () => {
@@ -181,6 +239,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<DashboardRole | null> => {
     const firebaseAuth = requireAuth();
     const cred = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    const cachedRole = getLocalRole(cred.user.uid);
+    if (cachedRole) {
+      setRole(cachedRole);
+      setNeedsRoleSelection(false);
+      return cachedRole;
+    }
     const savedRole = await fetchUserRole(cred.user.uid);
     setRole(savedRole);
     setNeedsRoleSelection(!savedRole);
@@ -200,12 +264,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password
     );
     if (name.trim()) {
-      await updateProfile(cred.user, { displayName: name.trim() });
+      await updateProfile(cred.user, { displayName: name.trim() }).catch(() => {});
     }
-    await persistUserRole(cred.user, assignedRole);
+    saveLocalRole(cred.user.uid, assignedRole);
     setUser(cred.user);
     setRole(assignedRole);
     setNeedsRoleSelection(false);
+    persistUserRole(cred.user, assignedRole).catch(() => {});
     return assignedRole;
   };
 
@@ -214,17 +279,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   ): Promise<DashboardRole | null> => {
     const firebaseAuth = requireAuth();
     const cred = await signInWithPopup(firebaseAuth, createGoogleProvider());
+    const cachedRole = getLocalRole(cred.user.uid);
+    if (cachedRole) {
+      setRole(cachedRole);
+      setNeedsRoleSelection(false);
+      return cachedRole;
+    }
+    if (preferredRole) {
+      saveLocalRole(cred.user.uid, preferredRole);
+      setRole(preferredRole);
+      setNeedsRoleSelection(false);
+      persistUserRole(cred.user, preferredRole).catch(() => {});
+      return preferredRole;
+    }
     const existingRole = await fetchUserRole(cred.user.uid);
     if (existingRole) {
       setRole(existingRole);
       setNeedsRoleSelection(false);
       return existingRole;
-    }
-    if (preferredRole) {
-      await persistUserRole(cred.user, preferredRole);
-      setRole(preferredRole);
-      setNeedsRoleSelection(false);
-      return preferredRole;
     }
     setRole(null);
     setNeedsRoleSelection(true);
@@ -237,9 +309,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!current) {
       throw new Error("Please sign in before assigning a dashboard.");
     }
-    await persistUserRole(current, assignedRole);
+    // 1. Immediately store in localStorage so next reload or read is instant
+    saveLocalRole(current.uid, assignedRole);
+    // 2. Immediately update state so router.replace executes without waiting on Firestore
     setRole(assignedRole);
     setNeedsRoleSelection(false);
+
+    // 3. Persist in background non-blockingly
+    persistUserRole(current, assignedRole).catch(() => {});
   };
 
   const resetPassword = async (email: string) => {
@@ -251,6 +328,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const firebaseAuth = getFirebaseAuth();
     if (!firebaseAuth) return;
     await firebaseSignOut(firebaseAuth);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem(LAST_ACTIVE_ROLE_KEY);
+      } catch {}
+    }
     setRole(null);
     setNeedsRoleSelection(false);
   };

@@ -21,26 +21,73 @@ function buildApiUrl(endpoint: string): string {
 }
 
 /**
- * Safe fetch helper with graceful fallback to initial static mock data
- * when the backend API server is unreachable.
+ * Circuit breaker for remote API requests.
+ * If the configured backend returns 404s or network errors repeatedly,
+ * avoid spamming dead endpoints and instantly return local mock data.
+ */
+let backendFailureCount = 0;
+let lastFailureTimestamp = 0;
+const FAILURE_THRESHOLD = 2;
+const BACKOFF_MS = 45000; // 45s cooldown before retrying a dead backend
+
+function isBackendTemporarilyDisabled(): boolean {
+  if (typeof window === "undefined") return false;
+  if (backendFailureCount >= FAILURE_THRESHOLD) {
+    if (Date.now() - lastFailureTimestamp < BACKOFF_MS) {
+      return true;
+    }
+    // Cooldown elapsed, allow a retry probe
+    backendFailureCount = 0;
+  }
+  return false;
+}
+
+function recordBackendFailure() {
+  backendFailureCount++;
+  lastFailureTimestamp = Date.now();
+}
+
+function recordBackendSuccess() {
+  backendFailureCount = 0;
+}
+
+/**
+ * Safe fetch helper with fast timeout and graceful fallback to initial static mock data
+ * when the backend API server is unreachable, slow, or returning 404.
  */
 async function safeFetch<T>(endpoint: string, options?: RequestInit, fallbackData?: T): Promise<T> {
+  if (fallbackData !== undefined && isBackendTemporarilyDisabled()) {
+    return fallbackData;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2500);
+
   try {
     const res = await fetch(buildApiUrl(endpoint), {
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
       },
       ...options,
     });
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
+      recordBackendFailure();
+      if (fallbackData !== undefined) {
+        return fallbackData;
+      }
       throw new Error(`API error: ${res.status} ${res.statusText}`);
     }
 
+    recordBackendSuccess();
     const json = await res.json();
     return (json.data ?? json) as T;
   } catch (error) {
+    clearTimeout(timeoutId);
+    recordBackendFailure();
     if (fallbackData !== undefined) {
       return fallbackData;
     }

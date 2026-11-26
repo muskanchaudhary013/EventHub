@@ -10,16 +10,24 @@ export default function DashboardIndexPage() {
   const router = useRouter();
 
   useEffect(() => {
+    if (role) {
+      const target = getDashboardPath(role);
+      router.replace(target);
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          if (window.location.pathname !== target) {
+            window.location.assign(target);
+          }
+        }, 150);
+      }
+      return;
+    }
     if (loading) return;
     if (!user) {
       router.replace("/login");
       return;
     }
-    if (!role) {
-      router.replace("/login?selectRole=1");
-      return;
-    }
-    router.replace(getDashboardPath(role));
+    router.replace("/login?selectRole=1");
   }, [loading, user, role, router]);
 
   return (

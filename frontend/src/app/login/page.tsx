@@ -116,7 +116,17 @@ function LoginFormContent() {
     setSubmitting(true);
     try {
       const assigned = await signInWithGoogle();
-      if (assigned) router.replace(getDashboardPath(assigned));
+      if (assigned) {
+        const target = getDashboardPath(assigned);
+        router.replace(target);
+        if (typeof window !== "undefined") {
+          setTimeout(() => {
+            if (window.location.pathname !== target) {
+              window.location.assign(target);
+            }
+          }, 150);
+        }
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -133,12 +143,19 @@ function LoginFormContent() {
     setSubmitting(true);
     try {
       await assignRole(selectedDashboard);
-      router.replace(getDashboardPath(selectedDashboard));
+      const target = getDashboardPath(selectedDashboard);
+      router.replace(target);
+      if (typeof window !== "undefined") {
+        setTimeout(() => {
+          if (window.location.pathname !== target) {
+            window.location.assign(target);
+          }
+        }, 150);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not assign dashboard role."
       );
-    } finally {
       setSubmitting(false);
     }
   };
