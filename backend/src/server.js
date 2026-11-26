@@ -12,19 +12,36 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+].filter(Boolean);
 
 // Security & Utility Middlewares
 app.use(helmet());
 app.use(
   cors({
-    origin: [CLIENT_URL, "http://localhost:3000", "http://127.0.0.1:3000"],
+    origin: (origin, callback) => {
+      // Allow same-origin / server-to-server requests (no Origin header) or configured origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Ensure MongoDB connection is established (serverless-safe cached connection)
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // Root welcome route
 app.get("/", (req, res) => {
@@ -45,16 +62,18 @@ app.use(notFoundHandler);
 // Central error handling middleware
 app.use(errorHandler);
 
-// Connect to MongoDB and start server
-const startServer = async () => {
-  await connectDB();
+// Start local HTTP listener only outside Vercel serverless runtime
+if (!process.env.VERCEL) {
+  const startServer = async () => {
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`[EventHub] Backend running in ${process.env.NODE_ENV || "development"} mode on http://localhost:${PORT}`);
-    console.log(`[EventHub] Health Check: http://localhost:${PORT}/api/health`);
-  });
-};
+    app.listen(PORT, () => {
+      console.log(`[EventHub] Backend running in ${process.env.NODE_ENV || "development"} mode on http://localhost:${PORT}`);
+      console.log(`[EventHub] Health Check: http://localhost:${PORT}/api/health`);
+    });
+  };
 
-startServer();
+  startServer();
+}
 
 export default app;

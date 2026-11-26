@@ -1,6 +1,24 @@
 import { EventItem, DigitalPass, ScanLogEntry, AttendeeRecord, INITIAL_EVENTS, INITIAL_PASSES, INITIAL_SCAN_LOGS, INITIAL_ATTENDEES } from "./eventhub-data";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+/**
+ * Resolves the API URL for both server-side and client-side requests:
+ * - Server-side (Vercel Functions / SSR): uses the injected `BACKEND_URL` service binding.
+ * - Client-side (browser): uses the shared same-origin `/api` path routed by `vercel.json`,
+ *   or `NEXT_PUBLIC_API_URL` if explicitly configured for standalone local dev.
+ */
+function buildApiUrl(endpoint: string): string {
+  const normalized = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+
+  if (typeof window === "undefined" && process.env.BACKEND_URL) {
+    const base = process.env.BACKEND_URL.endsWith("/")
+      ? process.env.BACKEND_URL
+      : `${process.env.BACKEND_URL}/`;
+    return new URL(`api${normalized}`, base).toString();
+  }
+
+  const publicBase = (process.env.NEXT_PUBLIC_API_URL || "/api").replace(/\/$/, "");
+  return `${publicBase}${normalized}`;
+}
 
 /**
  * Safe fetch helper with graceful fallback to initial static mock data
@@ -8,7 +26,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/a
  */
 async function safeFetch<T>(endpoint: string, options?: RequestInit, fallbackData?: T): Promise<T> {
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const res = await fetch(buildApiUrl(endpoint), {
       headers: {
         "Content-Type": "application/json",
         ...options?.headers,
