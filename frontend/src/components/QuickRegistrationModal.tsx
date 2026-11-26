@@ -265,8 +265,8 @@ export function QuickRegistrationModal({
                 {fullName} · {regType === "team" ? "Team Pass" : "Solo Pass"}
               </small>
             </div>
-            <div style={{ width: 64, height: 64, background: "#fff", borderRadius: 10, padding: 5, flexShrink: 0, color: "#090712" }}>
-              <QrCodeSvg size="sm" seed={issuedPass?.passCode || event.trackCode} />
+            <div style={{ flexShrink: 0 }}>
+              <QrCodeSvg size={58} value={issuedPass?.qrToken || issuedPass?.passCode || event.trackCode} />
             </div>
           </div>
 

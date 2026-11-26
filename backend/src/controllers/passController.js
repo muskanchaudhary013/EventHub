@@ -57,13 +57,27 @@ export const createPass = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "Event, holder name, and email are required" });
     }
 
-    // Generate unique passCode: EH-2025-XXX-####
+    // Generate unique passCode: EH-2026-XXX-####
+    // Single pass generated for Solo OR entire Team (never emailed; displayed on confirmation screen)
     const randCode = Math.floor(1000 + Math.random() * 9000);
-    const passCode = `EH-2025-${(eventTitle.slice(0, 3)).toUpperCase()}-${randCode}`;
-    const sigHash = `sha256:${crypto.createHash("sha256").update(`${passCode}:${holderEmail}:${Date.now()}`).digest("hex").slice(0, 24)}`;
+    const passCode = `EH-2026-${(eventTitle.slice(0, 3)).toUpperCase()}-${randCode}`;
+    const secret = process.env.QR_TOKEN_SECRET || process.env.JWT_SECRET || "eventhub-hmac-secret";
+    const tokenPayload = Buffer.from(
+      JSON.stringify({
+        v: 1,
+        tid: crypto.randomBytes(8).toString("hex"),
+        pid: passCode,
+        eid: eventId ? String(eventId) : "event",
+        iat: Date.now(),
+      })
+    ).toString("base64url");
+    const hmacSig = crypto.createHmac("sha256", secret).update(tokenPayload).digest("base64url");
+    const qrToken = `EH-SEC.v1.${tokenPayload}.${hmacSig}`;
+    const sigHash = `sha256:${crypto.createHmac("sha256", secret).update(qrToken).digest("hex").slice(0, 24)}`;
 
     const pass = await Pass.create({
       passCode,
+      qrToken,
       eventId,
       eventTitle,
       trackLabel: trackLabel || "General Track",

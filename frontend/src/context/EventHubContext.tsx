@@ -11,6 +11,11 @@ import {
   INITIAL_SCAN_LOGS,
   ScanLogEntry,
 } from "@/lib/eventhub-data";
+import {
+  generateSecureQrToken,
+  verifyQrToken,
+  VerificationResult,
+} from "@/lib/qr-security";
 
 interface AuditEntry {
   time: string;
@@ -39,6 +44,7 @@ interface EventHubContextValue {
     paymentMethod?: string;
   }) => DigitalPass;
   addEvent: (event: EventItem) => void;
+  checkInPass: (qrOrCode: string, gateLocation?: string) => VerificationResult;
   addScanLog: (entry: ScanLogEntry) => void;
   undoLatestScan: () => ScanLogEntry | null;
   overrideAttendeeStatus: (attendeeId: string, newStatus: AttendeeRecord["status"], reason: string) => void;
@@ -80,9 +86,11 @@ export function EventHubProvider({ children }: { children: React.ReactNode }) {
     const suffix = Math.floor(1000 + Math.random() * 9000);
     const prefix = event.trackCode.split("-")[0] || "EVT";
     const passCode = `EH-2026-${prefix}-${suffix}`;
+    const qrToken = generateSecureQrToken(passCode, event.id);
     const newPass: DigitalPass = {
       id: `pass-${Date.now()}`,
       passCode,
+      qrToken,
       eventTitle: event.title,
       trackLabel: event.categoryLabel,
       shortTabLabel: event.title.split(":")[0],
@@ -159,6 +167,78 @@ export function EventHubProvider({ children }: { children: React.ReactNode }) {
     setEvents((prev) => [event, ...prev]);
   };
 
+  const checkInPass = (
+    qrOrCode: string,
+    gateLocation = "Gate 2 Turing Hall"
+  ): VerificationResult => {
+    const result = verifyQrToken(qrOrCode, passes);
+    const nowTime = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    if (result.status === "granted" && result.pass) {
+      const matchedPass = result.pass as DigitalPass;
+      setPasses((prev) =>
+        prev.map((p) =>
+          p.id === matchedPass.id
+            ? {
+                ...p,
+                status: "Checked In",
+                checkInTime: nowTime,
+                checkInGate: gateLocation,
+              }
+            : p
+        )
+      );
+      setAttendees((prev) =>
+        prev.map((a) =>
+          a.passId.toUpperCase() === matchedPass.passCode.toUpperCase()
+            ? {
+                ...a,
+                status: "Present",
+                statusLabel: "Present",
+                scanTime: nowTime,
+                gateLocation,
+              }
+            : a
+        )
+      );
+      setScanLogs((prev) => [
+        {
+          id: `scan-${Date.now()}`,
+          time: nowTime.replace(/\s?[AP]M/, ""),
+          attendee: matchedPass.holderName,
+          subtitle:
+            matchedPass.teamName && matchedPass.teamName !== "Solo Entrant"
+              ? `(${matchedPass.teamName})`
+              : undefined,
+          event: matchedPass.eventTitle.split(":")[0],
+          passId: matchedPass.passCode,
+          status: "Valid",
+        },
+        ...prev,
+      ]);
+    } else if (result.status === "duplicate" && result.pass) {
+      const matchedPass = result.pass as DigitalPass;
+      setScanLogs((prev) => [
+        {
+          id: `scan-${Date.now()}`,
+          time: nowTime.replace(/\s?[AP]M/, ""),
+          attendee: matchedPass.holderName,
+          subtitle: `Duplicate (${result.firstCheckInTime || "Earlier"})`,
+          event: matchedPass.eventTitle.split(":")[0],
+          passId: matchedPass.passCode,
+          status: "Duplicate",
+        },
+        ...prev,
+      ]);
+    }
+
+    return result;
+  };
+
   const addScanLog = (entry: ScanLogEntry) => {
     setScanLogs((prev) => [entry, ...prev]);
   };
@@ -227,6 +307,7 @@ export function EventHubProvider({ children }: { children: React.ReactNode }) {
         toggleBookmark,
         registerPass,
         addEvent,
+        checkInPass,
         addScanLog,
         undoLatestScan,
         overrideAttendeeStatus,

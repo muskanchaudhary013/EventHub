@@ -43,6 +43,9 @@ export interface EventItem {
 export interface DigitalPass {
   id: string;
   passCode: string;
+  qrToken?: string;
+  checkInTime?: string;
+  checkInGate?: string;
   eventTitle: string;
   trackLabel: string;
   shortTabLabel: string;
@@ -514,9 +517,6 @@ export const INITIAL_EVENTS: EventItem[] = [
       "Access event updates",
       "Join the Hack4Tech community!",
     ],
-  },
-];
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAZlGwD1bnh8JU5r6rEoHwS7Q-8NpAwYpfK58mf_ci9X3kI6aNr8gQ3UrWtFUfXg_8TUHBxUV_Ue-7WafxA6nWV9E_xGoazaAPc8X22hSZJ3MHEI8DIXfwQVYXYJKBumwxyIBgYysxOiw--QfLa4ZpqUQUBFYe9moQUyvrMTdvqBdrEPkZHBoKZNOB34v20qCyCYG3AUPjn8nitGn-XXYVZUJlLt2wJNkpmY18muJg",
   },
 ];
 

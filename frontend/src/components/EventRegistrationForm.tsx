@@ -919,16 +919,13 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
                   boxShadow: "0 8px 30px rgba(0, 0, 0, 0.4)",
                 }}
               >
-                <div
-                  style={{
-                    background: "#ffffff",
-                    padding: 12,
-                    borderRadius: 12,
-                    display: "inline-flex",
-                  }}
-                >
-                  <QrCodeSvg value={issuedPass.passCode} size={150} />
-                </div>
+                <QrCodeSvg
+                  value={issuedPass.qrToken || issuedPass.passCode}
+                  size={170}
+                  showActions={true}
+                  pass={issuedPass}
+                  downloadName={issuedPass.passCode}
+                />
                 <div style={{ textAlign: "center" }}>
                   <span
                     style={{
@@ -941,8 +938,13 @@ export function EventRegistrationForm({ event }: EventRegistrationFormProps) {
                   >
                     {issuedPass.passCode}
                   </span>
-                  <div style={{ fontSize: 12, color: "#9f9cb8", marginTop: 2 }}>
-                    Instant QR Access Accredited
+                  <div style={{ fontSize: 12, color: "#34d399", marginTop: 4, fontWeight: 600 }}>
+                    {issuedPass.teamName && issuedPass.teamName !== "Solo Entrant"
+                      ? "1 Unified Team QR Pass • Displayed to Team Leader Only"
+                      : "Unique Solo QR Pass • Signed Token (No PII)"}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: "#9f9cb8", marginTop: 4 }}>
+                    Download as PNG or PDF now — QR codes are not sent via email.
                   </div>
                 </div>
               </div>

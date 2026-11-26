@@ -79,6 +79,12 @@ const passSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    qrToken: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
     status: {
       type: String,
       enum: ["Confirmed", "Check-In Ready", "Checked In", "Cancelled"],
@@ -91,6 +97,9 @@ const passSchema = new mongoose.Schema(
     },
     checkedInAt: {
       type: Date,
+    },
+    checkedInGate: {
+      type: String,
     },
   },
   {

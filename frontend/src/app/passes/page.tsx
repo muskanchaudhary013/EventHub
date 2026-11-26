@@ -222,12 +222,16 @@ export default function DigitalPassesPage() {
               )}
 
               <div style={{ textAlign: "center", marginTop: 24 }}>
-                <div className="eh-qr-box">
-                  <QrCodeSvg seed={activePass.passCode} />
-                </div>
+                <QrCodeSvg
+                  value={activePass.qrToken || activePass.passCode}
+                  size={190}
+                  showActions={true}
+                  pass={activePass}
+                  downloadName={activePass.passCode}
+                />
                 <div
                   style={{
-                    marginTop: 12,
+                    marginTop: 14,
                     fontFamily: "var(--font-jetbrains-mono), monospace",
                     fontWeight: 700,
                     fontSize: 16,
@@ -238,7 +242,12 @@ export default function DigitalPassesPage() {
                   {activePass.passCode}
                 </div>
                 <div style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 4, wordBreak: "break-all" }}>
-                  {activePass.sigHash}
+                  Signed Token: {activePass.sigHash}
+                </div>
+                <div style={{ fontSize: 11.5, color: "#34d399", marginTop: 6 }}>
+                  {activePass.teamName && activePass.teamName !== "Solo Entrant"
+                    ? "Single Team Pass • Valid for entire registered squad (Leader Download)"
+                    : "Single Solo Pass • No personal data embedded in QR"}
                 </div>
               </div>
 
@@ -248,16 +257,12 @@ export default function DigitalPassesPage() {
                   flexWrap: "wrap",
                   justifyContent: "center",
                   gap: 10,
-                  marginTop: 22,
+                  marginTop: 18,
                 }}
               >
                 <button type="button" className="eh-btn-outline" onClick={handleCopy}>
                   <Copy className="w-3.5 h-3.5" />
                   {copied ? "Copied!" : "Copy Code"}
-                </button>
-                <button type="button" className="eh-btn-outline" onClick={handleDownloadTicket}>
-                  <Download className="w-3.5 h-3.5" />
-                  Download Pass
                 </button>
                 <button
                   type="button"
@@ -268,7 +273,7 @@ export default function DigitalPassesPage() {
                   }}
                 >
                   <Wallet className="w-4 h-4" />
-                  {walletSaved ? "Saved to Wallet ✓" : "Save to Wallet"}
+                  {walletSaved ? "Saved to Device ✓" : "Save to Device"}
                 </button>
               </div>
             </div>
@@ -281,11 +286,11 @@ export default function DigitalPassesPage() {
                   <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Gate Check-In Protocol</h3>
                 </div>
                 <p style={{ color: "var(--muted)", fontSize: 13.5, lineHeight: 1.65, margin: 0 }}>
-                  1. Keep this pass open or downloaded before approaching turnstiles.
+                  1. Download your QR pass as an image (PNG) or PDF right from the confirmation screen—QR passes are never emailed for security.
                   <br />
-                  2. Gate volunteers scan your QR token once for instant entry verification.
+                  2. Gate volunteers scan your cryptographically signed QR token once for instant entry verification.
                   <br />
-                  3. Duplicate scans automatically flag a security alert—keep your code private.
+                  3. Team registrations receive one unified QR pass for the entire squad. Duplicate scans are flagged with the original check-in timestamp.
                 </p>
                 <div style={{ marginTop: 18 }}>
                   <Link className="eh-btn-outline" href="/scanner">
@@ -298,28 +303,41 @@ export default function DigitalPassesPage() {
               <div id="retrieve" className="eh-glass-card">
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                   <Mail className="w-5 h-5" style={{ color: "#c084fc" }} />
-                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Retrieve Your Pass</h3>
+                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Lookup Your Pass On-Screen</h3>
                 </div>
                 <p style={{ color: "var(--muted)", fontSize: 13.5, margin: "0 0 14px", lineHeight: 1.55 }}>
-                  Registered from another device or campus email? Enter your email below and we will resend your QR pass link.
+                  Need to pull up your QR pass on this device? Enter your registered email or Pass Code below to view and download it directly (QR passes are never sent via email).
                 </p>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if (recoveryEmail.trim()) setRecoverySent(true);
+                    const query = recoveryEmail.trim().toLowerCase();
+                    if (!query) return;
+                    const match = passes.find(
+                      (p) =>
+                        p.holderEmail.toLowerCase() === query ||
+                        p.passCode.toLowerCase() === query
+                    );
+                    if (match) {
+                      setActivePassId(match.id);
+                    }
+                    setRecoverySent(true);
                   }}
                   style={{ display: "flex", flexDirection: "column", gap: 12 }}
                 >
                   <input
-                    type="email"
+                    type="text"
                     required
                     className="eh-input"
                     value={recoveryEmail}
-                    onChange={(e) => setRecoveryEmail(e.target.value)}
-                    placeholder="you@campus.edu"
+                    onChange={(e) => {
+                      setRecoveryEmail(e.target.value);
+                      setRecoverySent(false);
+                    }}
+                    placeholder="you@campus.edu or EH-2026-HCK-9481"
                   />
                   <button type="submit" className="eh-btn-primary" style={{ width: "100%" }}>
-                    {recoverySent ? "Pass Link Sent to Inbox ✓" : "Email My Pass"}
+                    {recoverySent ? "Pass Loaded On-Screen ✓" : "Find & Display Pass"}
                     {!recoverySent && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>

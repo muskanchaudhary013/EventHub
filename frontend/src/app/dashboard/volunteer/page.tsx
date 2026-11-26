@@ -35,29 +35,39 @@ import { ALEX_AVATAR_URL, SCANNER_BG_URL } from "@/lib/eventhub-data";
 import { useEventHub } from "@/context/EventHubContext";
 import { useAuth } from "@/context/AuthContext";
 
-type ScanResultState = "valid" | "duplicate" | "late";
+type ScanResultState = "valid" | "duplicate" | "invalid" | "late";
 
 export default function VolunteerDashboardPage() {
   const { user } = useAuth();
-  const { scanLogs, passes, addScanLog, undoLatestScan } = useEventHub();
+  const { scanLogs, passes, checkInPass, addScanLog, undoLatestScan } = useEventHub();
 
   const [scanState, setScanState] = useState<ScanResultState>("valid");
   const [wedgeMode, setWedgeMode] = useState(true);
   const [torchOn, setTorchOn] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
   const [camFlipped, setCamFlipped] = useState(false);
-  const [manualCode, setManualCode] = useState("EH-2025-HCK-9481");
+  const [manualCode, setManualCode] = useState("EH-2026-HCK-9481");
   const [shiftCount, setShiftCount] = useState(418);
   const [undoSeconds, setUndoSeconds] = useState(10);
   const [bannerToast, setBannerToast] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [duplicateInfo, setDuplicateInfo] = useState({
+    passId: "EH-2026-ENG-3190",
+    holder: "Priya Sharma",
+    time: "08:42:19 AM",
+    gate: "Gate 1",
+  });
+  const [invalidInfo, setInvalidInfo] = useState({
+    token: "FORGED-QR-0000",
+    reason: "Invalid or unauthorized registration: forged, expired, or unregistered QR code.",
+  });
   const [lastScannedAttendee, setLastScannedAttendee] = useState({
     name: "Alex Chen",
     role: "Lead Hacker",
     team: "Team SyntaxErrors • Table #B-14",
-    passId: "EH-2025-HCK-9481",
-    track: "HackCampus 2025",
-    perks: "Full Access Pass + Food Token",
+    passId: "EH-2026-HCK-9481",
+    track: "HackCampus 2026",
+    perks: "Valid & Verified Registration • Access Granted",
     time: "09:14:02 AM",
   });
 
@@ -112,21 +122,34 @@ export default function VolunteerDashboardPage() {
         status: "Valid",
       });
     } else if (next === "duplicate") {
+      setDuplicateInfo({
+        passId: "EH-2026-ENG-3190",
+        holder: "Priya Sharma",
+        time: "08:42:19 AM",
+        gate: "Gate 1",
+      });
       addScanLog({
         id: `scan-${Date.now()}`,
         time: now.replace(/\s?[AP]M/, ""),
         attendee: "Priya Sharma",
         event: "Stanford AI Summit",
-        passId: "EH-2025-ENG-3190",
+        passId: "EH-2026-ENG-3190",
         status: "Duplicate",
       });
+    } else if (next === "invalid") {
+      setInvalidInfo({
+        token: "EH-FORGED-9999",
+        reason:
+          "Cryptographic signature check failed. Forged, expired, or unregistered QR code.",
+      });
+      showToast("Blocked invalid / forged QR token");
     } else {
       addScanLog({
         id: `scan-${Date.now()}`,
         time: now.replace(/\s?[AP]M/, ""),
         attendee: "Jordan Rivera",
         event: "Algorithmic Game Design",
-        passId: "EH-2025-DES-8114",
+        passId: "EH-2026-DES-8114",
         status: "Late",
         lateMinutes: 14,
       });
@@ -135,7 +158,7 @@ export default function VolunteerDashboardPage() {
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleaned = manualCode.trim().toUpperCase();
+    const cleaned = manualCode.trim();
     if (!cleaned) return;
     const now = new Date().toLocaleTimeString([], {
       hour: "2-digit",
@@ -143,37 +166,46 @@ export default function VolunteerDashboardPage() {
       second: "2-digit",
     });
 
-    const foundPass = passes.find((p) => p.passCode.toUpperCase() === cleaned);
-    if (cleaned.includes("3190") || cleaned.includes("DUP")) {
-      triggerSimulated("duplicate");
-      return;
-    }
-    if (cleaned.includes("8114") || cleaned.includes("LATE")) {
-      triggerSimulated("late");
+    const verification = checkInPass(cleaned, "Gate 2 Turing Hall");
+    setUndoSeconds(10);
+
+    if (verification.status === "granted" && verification.pass) {
+      const p = verification.pass;
+      setScanState("valid");
+      setShiftCount((c) => Math.min(650, c + 1));
+      setLastScannedAttendee({
+        name: p.holderName,
+        role: p.teamName && p.teamName !== "Solo Entrant" ? "Team Leader" : "Solo Entrant",
+        team: `${p.teamName || "Solo"} • ${p.booth || "Gate 2"}`,
+        passId: p.passCode,
+        track: p.eventTitle.split(":")[0],
+        perks: "Valid & Verified Registration • Access Granted",
+        time: now,
+      });
+      showToast(`Access Granted: ${p.holderName} (${p.passCode})`);
       return;
     }
 
-    setScanState("valid");
-    setShiftCount((c) => Math.min(650, c + 1));
-    setUndoSeconds(10);
-    setLastScannedAttendee({
-      name: foundPass?.holderName || "Verified Entrant",
-      role: foundPass ? "Registered Pass" : "Manual Wedge",
-      team: `${foundPass?.teamName || "General Track"} • ${foundPass?.booth || "Gate 2"}`,
-      passId: cleaned,
-      track: foundPass?.eventTitle.split(":")[0] || "HackCampus 2025",
-      perks: "Manual Verified Entry",
-      time: now,
+    if (verification.status === "duplicate" && verification.pass) {
+      const p = verification.pass;
+      setScanState("duplicate");
+      setDuplicateInfo({
+        passId: p.passCode,
+        holder: p.holderName,
+        time: verification.firstCheckInTime || p.checkInTime || "08:42:19 AM",
+        gate: verification.gateLocation || p.checkInGate || "Gate 2 Turing Hall",
+      });
+      showToast(`Duplicate Scan Blocked: ${p.passCode} already checked in`);
+      return;
+    }
+
+    // Invalid or Unauthorized
+    setScanState("invalid");
+    setInvalidInfo({
+      token: cleaned,
+      reason: verification.message,
     });
-    addScanLog({
-      id: `scan-${Date.now()}`,
-      time: now.replace(/\s?[AP]M/, ""),
-      attendee: foundPass?.holderName || "Manual Pass Holder",
-      event: foundPass?.eventTitle.split(":")[0] || "HackCampus 2025",
-      passId: cleaned,
-      status: "Manual",
-    });
-    showToast(`Validated ${cleaned} via Manual Wedge`);
+    showToast(`Invalid / Unauthorized QR Code: ${cleaned}`);
   };
 
   const handleUndo = () => {
@@ -379,6 +411,13 @@ export default function VolunteerDashboardPage() {
                     className="px-2.5 py-1 rounded bg-error hover:bg-error/90 text-on-error text-label-token font-bold transition-all cursor-pointer"
                   >
                     Duplicate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => triggerSimulated("invalid")}
+                    className="px-2.5 py-1 rounded bg-[#7F1D1D] hover:bg-[#991B1B] text-white text-label-token font-bold transition-all cursor-pointer"
+                  >
+                    Invalid
                   </button>
                   <button
                     type="button"
@@ -591,16 +630,16 @@ export default function VolunteerDashboardPage() {
                     <ShieldAlert className="w-6 h-6 text-[#EF4444] shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <h4 className="font-headline text-[17px] font-bold text-on-surface">
-                        Pass already checked in at Gate 1
+                        Already Checked In at {duplicateInfo.gate}
                       </h4>
                       <p className="text-[13px] text-on-surface-variant mt-1">
                         Pass{" "}
                         <strong className="text-label-code text-on-surface">
-                          EH-2025-ENG-3190
+                          {duplicateInfo.passId}
                         </strong>{" "}
-                        was stamped at{" "}
-                        <strong className="text-on-surface">08:42:19 AM</strong>{" "}
-                        by Volunteer #02 (Marcus Vance).
+                        ({duplicateInfo.holder}) was already checked in at{" "}
+                        <strong className="text-on-surface">{duplicateInfo.time}</strong>.
+                        Duplicate entry refused.
                       </p>
                     </div>
                   </div>
@@ -623,6 +662,68 @@ export default function VolunteerDashboardPage() {
                     className="px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface text-[13px] font-semibold hover:bg-surface-container transition-colors shadow-sm cursor-pointer"
                   >
                     Dismiss Notice
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {scanState === "invalid" && (
+              <div className="bg-[#450A0A]/15 border border-[#EF4444]/40 rounded-2xl p-6 shadow-sm flex flex-col relative overflow-hidden">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#DC2626] text-white">
+                      <ShieldAlert className="w-5 h-5" />
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-label-token font-bold text-[#DC2626] uppercase tracking-wider">
+                        Invalid or Unauthorized Registration • Access Denied
+                      </span>
+                      <span className="text-label-code text-[#B91C1C]">
+                        SERVER SIGNATURE VERIFICATION FAILED
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-[#DC2626] text-white text-label-token font-bold uppercase tracking-wider shadow-sm">
+                    Unauthorized
+                  </span>
+                </div>
+
+                <div className="bg-surface-container-lowest rounded-xl p-4 mb-4 shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <Ban className="w-6 h-6 text-[#DC2626] shrink-0 mt-0.5" />
+                    <div className="flex flex-col">
+                      <h4 className="font-headline text-[17px] font-bold text-on-surface">
+                        Forged, Expired, or Unregistered QR Code
+                      </h4>
+                      <p className="text-[13px] text-on-surface-variant mt-1">
+                        Token:{" "}
+                        <strong className="text-label-code text-on-surface">
+                          {invalidInfo.token}
+                        </strong>
+                        <br />
+                        {invalidInfo.reason}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      showToast("Logged unauthorized scan attempt to Security Audit")
+                    }
+                    className="px-4 py-2.5 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white text-[13px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                  >
+                    <Flag className="w-4 h-4" />
+                    <span>Report Forged Pass</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setScanState("valid")}
+                    className="px-4 py-2.5 rounded-lg bg-surface-container-lowest text-on-surface text-[13px] font-semibold hover:bg-surface-container transition-colors shadow-sm cursor-pointer"
+                  >
+                    Clear Scanner
                   </button>
                 </div>
               </div>
