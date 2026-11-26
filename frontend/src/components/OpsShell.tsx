@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { DashboardRole, useAuth } from "@/context/AuthContext";
 import { AuthGuard } from "./AuthGuard";
+import { ThemeToggle } from "./ThemeToggle";
 import "../app/home.css";
 
 interface OpsShellProps {
@@ -208,6 +209,7 @@ export function OpsShell({
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <ThemeToggle />
             <Link
               href="/passes#retrieve"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-purple-500/25 bg-purple-500/10 text-[12.5px] font-semibold text-purple-200 hover:bg-purple-500/20 transition-all whitespace-nowrap shrink-0"

@@ -50,8 +50,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable}`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('eh-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="bg-background text-on-surface font-sans antialiased selection:bg-primary-container/25 selection:text-primary">
         <AuthProvider>
           <EventHubProvider>{children}</EventHubProvider>

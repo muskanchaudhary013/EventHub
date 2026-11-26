@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, User, X } from "lucide-react";
 import { getDashboardPath, useAuth } from "@/context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function PublicHeader() {
   const pathname = usePathname();
@@ -70,6 +71,7 @@ export function PublicHeader() {
         </nav>
 
         <div className="eh-header-actions">
+          <ThemeToggle />
           <Link
             href={dashboardHref}
             className="eh-icon-btn"

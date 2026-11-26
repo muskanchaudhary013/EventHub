@@ -1319,3 +1319,142 @@ body:has(.eh) {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   EventHub Light Mode Theme Overrides (home.css)
+   ========================================================================== */
+html[data-theme="light"] body:has(.eh) {
+  background: #f6f4fc;
+  color: #141026;
+}
+
+html[data-theme="light"] .eh {
+  --bg: #f6f4fc;
+  --bg-2: #ffffff;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-solid: #ffffff;
+  --line: rgba(124, 58, 237, 0.2);
+  --line-soft: rgba(20, 16, 38, 0.08);
+  --muted: #575073;
+  --violet: #7c3aed;
+  --violet-bright: #9333ea;
+  --indigo: #6d28d9;
+  background:
+    radial-gradient(ellipse 80% 45% at 50% -10%, rgba(168, 85, 247, 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 35% at 92% 8%, rgba(99, 102, 241, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 8% 18%, rgba(192, 132, 252, 0.14), transparent 60%),
+    #f6f4fc;
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-header-wrap {
+  background: rgba(255, 255, 255, 0.82);
+  border-bottom-color: rgba(124, 58, 237, 0.14);
+}
+
+html[data-theme="light"] .eh-header-wrap.nav-scrolled {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom-color: rgba(124, 58, 237, 0.22);
+  box-shadow: 0 8px 28px -10px rgba(124, 58, 237, 0.16);
+}
+
+html[data-theme="light"] .eh-brand,
+html[data-theme="light"] .eh-nav a.on,
+html[data-theme="light"] .eh-nav a:hover,
+html[data-theme="light"] .eh-hero h1,
+html[data-theme="light"] .eh-sec-head h2,
+html[data-theme="light"] .eh-sub-h1,
+html[data-theme="light"] .eh-card-body h3,
+html[data-theme="light"] .eh-featured-body h3,
+html[data-theme="light"] .eh-step-item h4,
+html[data-theme="light"] .eh-faq-trigger,
+html[data-theme="light"] .eh-cd-cell b,
+html[data-theme="light"] .eh-footer-col h5 {
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-nav a {
+  color: #524b6e;
+}
+
+html[data-theme="light"] .eh-icon-btn,
+html[data-theme="light"] .eh-signin-btn,
+html[data-theme="light"] .eh-circle-arr,
+html[data-theme="light"] .eh-btn-outline {
+  background: #ffffff;
+  color: #141026;
+  border-color: rgba(124, 58, 237, 0.24);
+}
+
+html[data-theme="light"] .eh-icon-btn:hover,
+html[data-theme="light"] .eh-signin-btn:hover,
+html[data-theme="light"] .eh-circle-arr:hover,
+html[data-theme="light"] .eh-btn-outline:hover {
+  background: #f3e8ff;
+  border-color: #7c3aed;
+  color: #5b21b6;
+}
+
+html[data-theme="light"] .eh-countdown,
+html[data-theme="light"] .eh-featured-card,
+html[data-theme="light"] .eh-event-card,
+html[data-theme="light"] .eh-faq-item,
+html[data-theme="light"] .eh-glass-card,
+html[data-theme="light"] .eh-ticket-card,
+html[data-theme="light"] .eh-empty {
+  background: #ffffff;
+  border-color: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 12px 32px -12px rgba(124, 58, 237, 0.14);
+}
+
+html[data-theme="light"] .eh-search-box,
+html[data-theme="light"] .eh-select-pill,
+html[data-theme="light"] .eh-input {
+  background: #ffffff;
+  color: #141026;
+  border-color: rgba(124, 58, 237, 0.24);
+}
+
+html[data-theme="light"] .eh-search-box input,
+html[data-theme="light"] .eh-select-pill option {
+  color: #141026;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .eh-pill-badge,
+html[data-theme="light"] .eh-step-icon,
+html[data-theme="light"] .eh-sub-badge {
+  background: #f3e8ff;
+  color: #6d28d9;
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+html[data-theme="light"] .eh-retrieve-banner {
+  background: linear-gradient(120deg, #ede9fe 0%, #e0e7ff 55%, #f3e8ff 100%);
+  border-color: rgba(124, 58, 237, 0.3);
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-retrieve-banner strong {
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-footer {
+  background: #ffffff;
+  border-top-color: rgba(124, 58, 237, 0.16);
+}
+
+html[data-theme="light"] .eh-mobile-menu {
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom-color: rgba(124, 58, 237, 0.2);
+}
+
+html[data-theme="light"] .eh-mobile-menu a {
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-ticket-card [style*="color: #fff"],
+html[data-theme="light"] .eh-ticket-card [style*="color: rgb(255, 255, 255)"],
+html[data-theme="light"] .eh-glass-card [style*="color: #fff"] {
+  color: #141026 !important;
+}

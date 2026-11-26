@@ -851,3 +851,122 @@
     transform: scale(1) translateY(0);
   }
 }
+
+/* ==========================================================================
+   EventHub Registration Page Light Mode Overrides
+   ========================================================================== */
+html[data-theme="light"] .eh-reg-page {
+  background-color: #f6f4fc;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(168, 85, 247, 0.14), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(99, 102, 241, 0.1), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(192, 132, 252, 0.12), transparent 70%);
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-reg-topcard,
+html[data-theme="light"] .eh-reg-maincard,
+html[data-theme="light"] .eh-reg-summarycard,
+html[data-theme="light"] .eh-payment-card {
+  background: #ffffff;
+  border-color: rgba(124, 58, 237, 0.22);
+  box-shadow: 0 14px 36px -12px rgba(124, 58, 237, 0.14);
+}
+
+html[data-theme="light"] .eh-top-title,
+html[data-theme="light"] .eh-top-fee-value,
+html[data-theme="light"] .eh-card-title-group h2,
+html[data-theme="light"] .eh-form-section-title,
+html[data-theme="light"] .eh-summary-head,
+html[data-theme="light"] .eh-summary-title,
+html[data-theme="light"] .eh-summary-fee-value,
+html[data-theme="light"] .eh-payment-head-text h3,
+html[data-theme="light"] .eh-method-name {
+  color: #141026;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .eh-top-meta,
+html[data-theme="light"] .eh-card-title-group p,
+html[data-theme="light"] .eh-summary-meta,
+html[data-theme="light"] .eh-payment-head-text p,
+html[data-theme="light"] .eh-method-sub,
+html[data-theme="light"] .eh-field-helper,
+html[data-theme="light"] .eh-top-fee-label,
+html[data-theme="light"] .eh-summary-fee-label {
+  color: #575073;
+}
+
+html[data-theme="light"] .eh-form-label,
+html[data-theme="light"] .eh-perk-item,
+html[data-theme="light"] .eh-terms-label {
+  color: #2c244a;
+}
+
+html[data-theme="light"] .eh-back-btn,
+html[data-theme="light"] .eh-top-badge {
+  background: #f3e8ff;
+  color: #6d28d9;
+  border-color: rgba(124, 58, 237, 0.28);
+}
+
+html[data-theme="light"] .eh-back-btn:hover {
+  background: #e9d5ff;
+  color: #4c1d95;
+}
+
+html[data-theme="light"] .eh-mode-switcher {
+  background: #f3f0fb;
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+html[data-theme="light"] .eh-mode-btn:not(.active) {
+  color: #575073;
+}
+
+html[data-theme="light"] .eh-mode-btn:not(.active):hover {
+  color: #141026;
+  background: rgba(124, 58, 237, 0.08);
+}
+
+html[data-theme="light"] .eh-input-wrap,
+html[data-theme="light"] .eh-member-row,
+html[data-theme="light"] .eh-method-option {
+  background: #faf9fe;
+  border-color: rgba(124, 58, 237, 0.22);
+}
+
+html[data-theme="light"] .eh-method-option:hover {
+  background: #f3e8ff;
+}
+
+html[data-theme="light"] .eh-method-option.selected {
+  background: linear-gradient(145deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 1px #7c3aed, 0 8px 20px -6px rgba(124, 58, 237, 0.28);
+}
+
+html[data-theme="light"] .eh-input-field {
+  color: #141026;
+}
+
+html[data-theme="light"] .eh-input-field::placeholder {
+  color: #8b85a6;
+}
+
+html[data-theme="light"] .eh-otp-timer,
+html[data-theme="light"] .eh-member-badge,
+html[data-theme="light"] .eh-perk-check {
+  background: #ede9fe;
+  color: #6d28d9;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+html[data-theme="light"] .eh-custom-check {
+  background: #ffffff;
+  border-color: rgba(124, 58, 237, 0.35);
+}
+
+html[data-theme="light"] .eh-terms-link {
+  color: #7c3aed;
+}
