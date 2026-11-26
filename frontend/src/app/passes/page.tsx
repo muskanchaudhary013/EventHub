@@ -44,7 +44,7 @@ export default function DigitalPassesPage() {
 
   const handleCopy = () => {
     if (!activePass) return;
-    navigator.clipboard?.writeText(activePass.passCode).catch(() => {});
+    navigator.clipboard?.writeText(activePass.passCode).catch(() => { });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
