@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import mongoose from "mongoose";
 import { connectDB } from "../config/db.js";
 import { Event } from "../models/Event.js";
 import { Pass } from "../models/Pass.js";
 import { ScanLog } from "../models/ScanLog.js";
 import { Attendee } from "../models/Attendee.js";
-
-dotenv.config();
 
 const INITIAL_EVENTS = [
   {
@@ -379,7 +379,12 @@ const INITIAL_ATTENDEES = [
 ];
 
 async function seed() {
-  await connectDB();
+  const conn = await connectDB();
+  if (!conn) {
+    console.error("Could not connect to MongoDB. Skipping seeding.");
+    process.exit(1);
+  }
+
   console.log("Seeding EventHub database...");
 
   try {
@@ -393,11 +398,12 @@ async function seed() {
     await ScanLog.insertMany(INITIAL_SCAN_LOGS);
     await Attendee.insertMany(INITIAL_ATTENDEES);
 
-    console.log("EventHub Database seeded successfully!");
+    console.log("✅ EventHub Database seeded successfully on MongoDB Atlas!");
   } catch (err) {
     console.error("Seeding error:", err);
   } finally {
-    mongoose.connection.close();
+    await mongoose.connection.close();
+    process.exit(0);
   }
 }
 
