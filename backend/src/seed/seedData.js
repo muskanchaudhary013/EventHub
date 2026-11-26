@@ -11,7 +11,7 @@ import { Attendee } from "../models/Attendee.js";
 const INITIAL_EVENTS = [
   {
     trackCode: "HACK-AI-01",
-    title: "HackCampus 2025: 36-Hour AI Hackathon",
+    title: "HackCampus 2026: 36-Hour AI Hackathon",
     subtitle: "Flagship Hackathon",
     description:
       "Build agentic AI workflows, spatial intelligence systems, or zero-knowledge verifiable credentials. Mentored by Silicon Valley engineers with high-performance edge compute clusters on-site.",
@@ -29,9 +29,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Allocation Manifest",
     quotaUnit: "Hacker Teams Accreditated",
     progressColor: "bg-primary-container",
-    dateShort: "Oct 24-26, 2025 (36h)",
+    dateShort: "Dec 11-13, 2026 (36h)",
     dateFilter: "fri",
-    dateFull: "Oct 24-26, 2025",
+    dateFull: "Dec 11-13, 2026",
     venue: "Main Quad & Turing Hall",
     ctaLabel: "Register Solo or Team",
     imageUrl:
@@ -60,9 +60,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Arena Quota",
     quotaUnit: "Bots Registered",
     progressColor: "bg-error",
-    dateShort: "Fri Oct 24",
+    dateShort: "Fri Dec 11",
     dateFilter: "fri",
-    dateFull: "Fri Oct 24, 2025",
+    dateFull: "Fri Dec 11, 2026",
     venue: "Mech Hangar B",
     ctaLabel: "Get Combat Pass",
     imageUrl:
@@ -88,9 +88,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Seats Registered",
     quotaUnit: "Designers",
     progressColor: "bg-secondary-container",
-    dateShort: "Fri Oct 24",
+    dateShort: "Fri Dec 11",
     dateFilter: "fri",
-    dateFull: "Fri Oct 24, 2025",
+    dateFull: "Fri Dec 11, 2026",
     venue: "Design Studio 3",
     ctaLabel: "Get Sprint Pass",
     imageUrl:
@@ -116,9 +116,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "General Admission",
     quotaUnit: "Registered",
     progressColor: "bg-primary-container",
-    dateShort: "Sat Oct 25",
+    dateShort: "Sat Dec 12",
     dateFilter: "sat",
-    dateFull: "Sat Oct 25, 2025",
+    dateFull: "Sat Dec 12, 2026",
     venue: "Open Amphitheater",
     ctaLabel: "Get Free Pass",
     imageUrl:
@@ -144,9 +144,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Lab Quota",
     quotaUnit: "Registered",
     progressColor: "bg-tertiary-container",
-    dateShort: "Fri Oct 24",
-    dateFilter: "fri",
-    dateFull: "Fri Oct 24, 2025",
+    dateShort: "Sat Dec 12",
+    dateFilter: "sat",
+    dateFull: "Sat Dec 12, 2026",
     venue: "Lab 404, CS Wing",
     ctaLabel: "Get Pass",
     imageUrl:
@@ -172,9 +172,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Team Slots",
     quotaUnit: "Teams Checked In",
     progressColor: "bg-secondary-container",
-    dateShort: "Sat Oct 25",
+    dateShort: "Sat Dec 12",
     dateFilter: "sat",
-    dateFull: "Sat Oct 25, 2025",
+    dateFull: "Sat Dec 12, 2026",
     venue: "Gaming Arena",
     ctaLabel: "Register Squad",
     imageUrl:
@@ -200,9 +200,9 @@ const INITIAL_EVENTS = [
     quotaLabel: "Auditorium Seats",
     quotaUnit: "RSVPs",
     progressColor: "bg-tertiary-container",
-    dateShort: "Sun Oct 26",
+    dateShort: "Sun Dec 13",
     dateFilter: "sun",
-    dateFull: "Sun Oct 26, 2025",
+    dateFull: "Sun Dec 13, 2026",
     venue: "Kavli Auditorium",
     ctaLabel: "RSVP Keynote Pass",
     imageUrl:

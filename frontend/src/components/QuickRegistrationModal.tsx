@@ -10,6 +10,8 @@ import {
   Info,
   Loader2,
   MapPin,
+  Sparkles,
+  Ticket,
   X,
 } from "lucide-react";
 import { DigitalPass, EventItem } from "@/lib/eventhub-data";
@@ -27,8 +29,8 @@ export function QuickRegistrationModal({
 }: QuickRegistrationModalProps) {
   const { registerPass } = useEventHub();
   const [regType, setRegType] = useState<"solo" | "team">("solo");
-  const [fullName, setFullName] = useState("Alex Rivera");
-  const [email, setEmail] = useState("arivera@cs.stanford.edu");
+  const [fullName, setFullName] = useState("Alex Chen");
+  const [email, setEmail] = useState("alex.chen@campus.edu");
   const [teamName, setTeamName] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
   const [issuedPass, setIssuedPass] = useState<DigitalPass | null>(null);
@@ -50,8 +52,6 @@ export function QuickRegistrationModal({
 
   if (!event) return null;
 
-  const isEduEmail = email.includes("@") && email.toLowerCase().includes(".edu");
-
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
     if (status !== "idle") return;
@@ -59,30 +59,71 @@ export function QuickRegistrationModal({
     setTimeout(() => {
       const pass = registerPass({
         event,
-        holderName: fullName.trim() || "Alex Rivera",
-        holderEmail: email.trim() || "arivera@cs.stanford.edu",
+        holderName: fullName.trim() || "Alex Chen",
+        holderEmail: email.trim() || "alex.chen@campus.edu",
         isTeam: regType === "team",
         teamName: teamName.trim() || undefined,
       });
       setIssuedPass(pass);
       setStatus("done");
-    }, 650);
+    }, 600);
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 100,
+        backgroundColor: "rgba(0, 0, 0, 0.75)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-surface-container-lowest rounded-3xl border border-outline-variant/40 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        style={{
+          width: "100%",
+          maxWidth: 540,
+          backgroundColor: "#181523",
+          border: "1.5px solid rgba(214, 28, 255, 0.45)",
+          borderRadius: 24,
+          boxShadow: "0 0 60px rgba(214, 28, 255, 0.35)",
+          overflow: "hidden",
+          color: "#fff",
+          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+          maxHeight: "92vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="p-4 bg-surface-container-low border-b border-outline-variant/30 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-tertiary animate-pulse" />
-            <span className="text-label-token uppercase font-bold text-on-surface">
+        <div
+          style={{
+            padding: "16px 24px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "rgba(255, 255, 255, 0.03)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "var(--mag)",
+                boxShadow: "0 0 10px var(--mag)",
+              }}
+            />
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--muted)" }}>
               Instant Pass Dispatch • 30s Check-In
             </span>
           </div>
@@ -90,200 +131,225 @@ export function QuickRegistrationModal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors cursor-pointer"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "rgba(255, 255, 255, 0.1)",
+              border: 0,
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
           >
-            <X className="w-4 h-4" />
+            <X style={{ width: 16, height: 16 }} />
           </button>
         </div>
 
-        <form onSubmit={handleConfirm} className="p-6 space-y-4 overflow-y-auto">
-          {/* Event Header Context */}
+        <form onSubmit={handleConfirm} style={{ padding: 24, overflowY: "auto", display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Event Context */}
           <div>
-            <span className="text-label-code text-primary uppercase font-bold">
-              {event.trackCode}
+            <span style={{ color: "var(--mag)", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em" }}>
+              {event.trackCode} • {event.categoryLabel}
             </span>
-            <h3 className="font-headline text-headline-md font-bold text-on-surface mt-0.5">
+            <h3 style={{ fontSize: 20, fontWeight: 800, margin: "4px 0 6px" }}>
               {event.title}
             </h3>
-            <div className="flex flex-wrap items-center gap-4 text-on-surface-variant text-[13px] mt-1.5">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "var(--muted)", fontSize: 13 }}>
+              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <Calendar style={{ width: 14, height: 14 }} />
                 {event.dateFull}
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
+              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <MapPin style={{ width: 14, height: 14 }} />
                 {event.venue}
               </span>
             </div>
           </div>
 
-          {/* Registration Switch */}
-          <div className="p-1 bg-surface-container-low rounded-xl flex items-center text-[13px] font-semibold">
+          {/* Registration Type Switcher */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 6,
+              background: "rgba(0, 0, 0, 0.35)",
+              padding: 4,
+              borderRadius: 999,
+            }}
+          >
             <button
               type="button"
               onClick={() => setRegType("solo")}
-              className={`flex-1 py-2 rounded-lg text-center transition-all cursor-pointer ${
-                regType === "solo"
-                  ? "bg-surface-container-lowest text-on-surface shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface"
-              }`}
+              style={{
+                background: regType === "solo" ? "var(--g)" : "transparent",
+                color: "#fff",
+                border: 0,
+                borderRadius: 999,
+                padding: "8px 16px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
             >
               Solo Participant
             </button>
             <button
               type="button"
               onClick={() => setRegType("team")}
-              className={`flex-1 py-2 rounded-lg text-center transition-all cursor-pointer ${
-                regType === "team"
-                  ? "bg-surface-container-lowest text-on-surface shadow-sm"
-                  : "text-on-surface-variant hover:text-on-surface"
-              }`}
+              style={{
+                background: regType === "team" ? "var(--g)" : "transparent",
+                color: "#fff",
+                border: 0,
+                borderRadius: 999,
+                padding: "8px 16px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
             >
               Squad / Team (Up to 4)
             </button>
           </div>
 
-          {/* Inputs */}
-          <div className="space-y-3">
+          {/* Input Fields */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
-              <label className="block text-label-token uppercase text-on-surface-variant mb-1">
-                Student Lead Full Name
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
+                Lead Attendee Name
               </label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-[15px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-container-lowest"
+                style={{
+                  width: "100%",
+                  background: "rgba(25, 22, 35, 0.8)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  borderRadius: 12,
+                  color: "#fff",
+                  padding: "10px 14px",
+                  fontSize: 14,
+                  boxSizing: "border-box",
+                }}
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-label-token uppercase text-on-surface-variant">
-                  College .EDU Email
-                </label>
-                <span
-                  className={`text-label-code text-[11px] flex items-center gap-1 font-semibold ${
-                    isEduEmail ? "text-tertiary" : "text-on-surface-variant"
-                  }`}
-                >
-                  {isEduEmail ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Valid College Record
-                    </>
-                  ) : (
-                    <>
-                      <Info className="w-3.5 h-3.5" />
-                      Enter .edu domain
-                    </>
-                  )}
-                </span>
-              </div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
+                Campus Email Address
+              </label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-[15px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-container-lowest"
+                style={{
+                  width: "100%",
+                  background: "rgba(25, 22, 35, 0.8)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  borderRadius: 12,
+                  color: "#fff",
+                  padding: "10px 14px",
+                  fontSize: 14,
+                  boxSizing: "border-box",
+                }}
               />
             </div>
 
             {regType === "team" && (
               <div>
-                <label className="block text-label-token uppercase text-on-surface-variant mb-1">
-                  Team / Squad Codename
+                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
+                  Squad / Team Codename
                 </label>
                 <input
                   type="text"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="e.g. NeuralHacks-0x"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-[15px] text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-container-lowest"
+                  placeholder="e.g. QuantumLeap-0x"
+                  style={{
+                    width: "100%",
+                    background: "rgba(25, 22, 35, 0.8)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    borderRadius: 12,
+                    color: "#fff",
+                    padding: "10px 14px",
+                    fontSize: 14,
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             )}
           </div>
 
-          {/* Tactile Perforated QR Pass Preview */}
-          <div className="w-full bg-surface-container-low rounded-2xl p-4 border border-outline-variant/40 relative">
-            {/* Semicircular perforation cutouts */}
-            <div className="hidden sm:block absolute -left-2.5 top-[56px] w-5 h-5 rounded-full bg-surface-container-lowest border-r border-outline-variant/40" />
-            <div className="hidden sm:block absolute -right-2.5 top-[56px] w-5 h-5 rounded-full bg-surface-container-lowest border-l border-outline-variant/40" />
-
-            <div className="flex items-center justify-between pb-3 border-b border-dashed border-outline-variant/60">
-              <div>
-                <span className="text-label-token uppercase text-on-surface-variant">
-                  Pass Preview
-                </span>
-                <p className="text-label-code font-bold text-on-surface">
-                  {issuedPass ? issuedPass.passCode : "HASH: #88F9-2A4C-GATE1"}
-                </p>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-token uppercase font-bold">
-                {issuedPass ? "Issued Live" : "Instant Pass"}
+          {/* Pass Preview Mini Card */}
+          <div
+            style={{
+              background: "linear-gradient(135deg, #24143d, #19122c)",
+              border: "1px solid rgba(214, 28, 255, 0.35)",
+              borderRadius: 16,
+              padding: 16,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 16,
+            }}
+          >
+            <div>
+              <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--mint)", fontWeight: 700 }}>
+                {issuedPass ? "Pass Issued Live ✓" : "Pre-Accredited Gate Pass"}
               </span>
+              <div style={{ font: "700 15px ui-monospace,Menlo,monospace", marginTop: 4 }}>
+                {issuedPass ? issuedPass.passCode : `EH-2026-${event.trackCode}`}
+              </div>
+              <small style={{ color: "var(--muted)", fontSize: 12 }}>
+                {fullName} • {regType === "team" ? "Squad Pass" : "Solo Pass"}
+              </small>
             </div>
-
-            <div className="flex items-center justify-between pt-3">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[14px] font-bold text-on-surface">
-                  {fullName || "Alex Rivera"}
-                </span>
-                <span className="text-label-code text-[12px] text-on-surface-variant">
-                  Stanford ID: 9940210
-                </span>
-                <span className="text-label-token uppercase text-primary font-bold">
-                  Gate Status: Pre-Accredited
-                </span>
-              </div>
-              <div className="w-20 h-20 bg-surface-container-lowest p-1.5 rounded-lg border border-outline-variant/30 flex items-center justify-center shrink-0 shadow-sm">
-                <QrCodeSvg size="sm" seed={issuedPass?.passCode || event.trackCode} />
-              </div>
+            <div style={{ width: 64, height: 64, background: "#fff", borderRadius: 8, padding: 4, flexShrink: 0 }}>
+              <QrCodeSvg size="sm" seed={issuedPass?.passCode || event.trackCode} />
             </div>
           </div>
 
-          {/* CTA */}
+          {/* Actions */}
           {status === "done" && issuedPass ? (
-            <div className="space-y-2.5">
-              <div className="w-full py-3 rounded-xl bg-tertiary-container text-white text-[15px] font-bold flex items-center justify-center gap-2 shadow-sm">
-                <Check className="w-5 h-5" />
-                <span>Pass Issued ({issuedPass.passCode})</span>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  href="/passes"
-                  onClick={onClose}
-                  className="flex-1 py-2.5 rounded-lg bg-on-surface text-surface text-[14px] font-semibold text-center hover:opacity-90 transition-opacity"
-                >
-                  Open in My Passes →
-                </Link>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2.5 rounded-lg bg-surface-container text-on-surface text-[14px] font-semibold hover:bg-surface-container-high cursor-pointer"
-                >
-                  Done
-                </button>
-              </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              <Link
+                href="/passes"
+                onClick={onClose}
+                className="btn"
+                style={{ flex: 1, textAlign: "center", textDecoration: "none" }}
+              >
+                Open in My Passes →
+              </Link>
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn-secondary"
+              >
+                Done
+              </button>
             </div>
           ) : (
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="w-full py-3.5 rounded-xl bg-primary-container text-on-primary hover:bg-[#E0484D] active:scale-[0.98] transition-all text-[15px] font-bold flex items-center justify-center gap-2 shadow-sm disabled:opacity-70 cursor-pointer"
+              className="btn"
+              style={{ width: "100%", padding: "12px 24px", fontSize: 14 }}
             >
               {status === "submitting" ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Dispatching Cryptographic Pass...</span>
-                </>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
+                  Dispatching Cryptographic Pass...
+                </span>
               ) : (
-                <>
-                  <BadgeCheck className="w-5 h-5" />
-                  <span>Generate &amp; Add Pass to Wallet</span>
-                </>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <BadgeCheck style={{ width: 18, height: 18 }} />
+                  Generate &amp; Claim Entry Pass
+                </span>
               )}
             </button>
           )}

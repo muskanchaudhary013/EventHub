@@ -23,11 +23,11 @@ export default function DashboardIndexPage() {
   }, [loading, user, role, router]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="bg-surface-container-lowest border border-[#E8E2D5] rounded-2xl p-8 max-w-sm w-full text-center space-y-3 shadow-sm">
-        <Loader2 className="w-7 h-7 animate-spin text-primary-container mx-auto" />
-        <p className="font-headline text-[16px] font-bold text-on-surface">
-          Opening your EventHub dashboard...
+    <div className="min-h-screen bg-[#13111c] flex items-center justify-center p-6">
+      <div className="bg-[#181523] border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center space-y-3 shadow-xl">
+        <Loader2 className="w-7 h-7 animate-spin text-[#E040FB] mx-auto" />
+        <p className="text-[16px] font-bold text-white">
+          Opening your EventHub workspace...
         </p>
       </div>
     </div>

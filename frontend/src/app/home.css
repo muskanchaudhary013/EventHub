@@ -7,6 +7,9 @@ body:has(.eh){background:linear-gradient(160deg,#D61CFF,#8A2BE2) fixed}
  :focus-visible{outline:3px solid #fff;outline-offset:3px;border-radius:10px}
  .app{max-width:1240px;margin:0 auto;background:var(--bg);border-radius:28px;overflow:hidden;box-shadow:0 30px 70px -20px rgba(0,0,0,.6)}
  .pad{padding-left:clamp(18px,4vw,56px);padding-right:clamp(18px,4vw,56px)}
+ .nav-sticky-wrap{position:sticky;top:0;z-index:50;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .25s ease;width:100%}
+ .nav-sticky-wrap.nav-hidden{transform:translateY(-125%);pointer-events:none}
+ .nav-sticky-wrap.nav-scrolled .nav{box-shadow:0 14px 40px -6px rgba(0,0,0,.7),0 0 30px rgba(214,28,255,.45);backdrop-filter:blur(18px)}
  .nav{margin:0 clamp(14px,4vw,60px);display:flex;align-items:center;gap:18px;padding:14px 28px;background:var(--g);border-radius:0 0 28px 28px;position:relative;z-index:5}
  .logo{font-weight:800;font-size:22px;display:flex;align-items:center;gap:9px}
  .logo i{width:28px;height:28px;border-radius:50%;background:repeating-linear-gradient(#fff 0 3px,transparent 3px 6px)}
@@ -23,7 +26,10 @@ body:has(.eh){background:linear-gradient(160deg,#D61CFF,#8A2BE2) fixed}
  .cd div{width:76px;padding:10px 0;border-radius:14px;border:1px solid rgba(214,28,255,.7);background:rgba(20,16,32,.6);backdrop-filter:blur(6px);font-size:13px}
  .cd b{display:block;font-size:34px;font-weight:600;line-height:1.1}
  .cdl{font-size:14px;color:var(--muted);margin-bottom:34px}
- .car{display:flex;align-items:center;justify-content:center;position:relative;padding:0 50px;height:380px}
+ .car{display:flex;align-items:center;justify-content:center;position:relative;padding:0 50px;height:380px;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+ .car.grabbing{cursor:grabbing}
+ .car-track{display:flex;align-items:center;justify-content:center;width:100%;height:100%;position:relative;will-change:transform}
+ .car-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:14px;opacity:.75;letter-spacing:.04em}
  .sl{flex:0 0 22%;height:330px;border-radius:14px;position:relative;overflow:hidden;background-color:#222;background-size:cover;background-position:center;cursor:pointer;transition:all .4s;margin:0 -1px;text-align:left;border:0;color:#fff;font:inherit}
  .sl.c{flex-basis:30%;height:380px;z-index:2;border-radius:16px}
  .ov{position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,10,14,.92))}
@@ -91,7 +97,44 @@ body:has(.eh){background:linear-gradient(160deg,#D61CFF,#8A2BE2) fixed}
  footer h4{margin:0 0 12px;color:#fff;font-size:16px}
  footer a{display:block;margin-bottom:8px}
  .cp{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px;font-size:12px}
- @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.cats{grid-template-columns:repeat(3,1fr)}.pass-sec,.live{grid-template-columns:1fr}footer{grid-template-columns:1fr 1fr}.nav nav{display:none}.nav .r{margin-left:auto}.sl{display:none}.sl.c,.sl.s{display:block;flex-basis:62%;height:340px}.sl.s{flex-basis:20%;height:290px}.car{padding:0 20px;height:350px}.arr{display:none}}
- @media (max-width:560px){padding:8px;.grid{grid-template-columns:1fr}.cd div{width:64px}.cd b{font-size:26px}.pill.hide{display:none}}
+ /* Subpage Title and Hero Sections */
+ .page-title-wrap{padding-top:40px;padding-bottom:28px;text-align:center}
+ .page-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(214,28,255,.5);background:rgba(214,28,255,.15);color:var(--mag);border-radius:999px;padding:6px 16px;font:700 12px var(--font-montserrat),sans-serif;text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px}
+ .page-h1{font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+ .page-sub{font-size:clamp(15px,2vw,18px);color:var(--muted);max-width:38em;margin:0 auto}
+
+ /* FAQ Page Cards */
+ .faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:20px}
+ .faq-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;transition:all .25s ease}
+ .faq-card:hover{border-color:rgba(214,28,255,.5);transform:translateY(-3px);box-shadow:0 12px 30px -10px rgba(214,28,255,.25)}
+ .faq-icon-box{width:44px;height:44px;border-radius:12px;background:rgba(214,28,255,.18);color:var(--mag);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+ .faq-card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+ .faq-card p{color:var(--muted);font-size:14px;line-height:1.6}
+ .faq-banner{background:linear-gradient(135deg,#1f1838,#2c1547);border:1px solid rgba(214,28,255,.4);border-radius:20px;padding:26px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:28px;flex-wrap:wrap}
+
+ /* My Passes Page Styles */
+ .pass-tabs-bar{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;margin-bottom:24px}
+ .pass-tab-btn{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:8px 18px;color:var(--muted);font:600 13px var(--font-montserrat),sans-serif;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;transition:all .2s}
+ .pass-tab-btn.active{border-color:var(--mag);background:rgba(214,28,255,.2);color:#fff}
+ .pass-hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:start}
+ .pass-card-big{background:linear-gradient(160deg,#2A1747,#1B1230);border:1.5px solid rgba(214,28,255,.5);border-radius:24px;padding:28px;position:relative;box-shadow:0 0 60px -12px rgba(214,28,255,.5)}
+ .pass-card-big::before,.pass-card-big::after{content:"";position:absolute;top:62%;width:26px;height:26px;border-radius:50%;background:var(--bg)}
+ .pass-card-big::before{left:-13px}.pass-card-big::after{right:-13px}
+ .pass-actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+ .btn-secondary{background:rgba(255,255,255,.1);border:1.5px solid var(--line);color:#fff;border-radius:999px;padding:10px 20px;font:600 13px var(--font-montserrat),sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+ .btn-secondary:hover{background:rgba(255,255,255,.18);border-color:#fff}
+
+ /* Login / Signup Auth Page */
+ .auth-box{max-width:540px;margin:20px auto 40px;background:var(--card);border:1.5px solid rgba(214,28,255,.4);border-radius:24px;padding:36px;box-shadow:0 20px 50px -10px rgba(0,0,0,.7)}
+ .role-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+ .role-btn{background:rgba(255,255,255,.05);border:1.5px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;color:#fff;font:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:8px}
+ .role-btn.active{border-color:var(--mag);background:rgba(214,28,255,.2);box-shadow:0 0 16px rgba(214,28,255,.3)}
+ .form-group{margin-bottom:18px;text-align:left}
+ .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#ddd}
+ .form-input{width:100%;background:rgba(20,20,25,.8);border:1.5px solid var(--line);border-radius:12px;color:#fff;padding:12px 16px;font:inherit;font-size:14px;transition:border-color .2s;box-sizing:border-box}
+ .form-input:focus{outline:none;border-color:var(--mag)}
+
+ @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.faq-grid{grid-template-columns:1fr}.pass-hero-grid{grid-template-columns:1fr}.pass-sec,.live{grid-template-columns:1fr}footer{grid-template-columns:1fr 1fr}.nav nav{display:none}.nav .r{margin-left:auto}.sl{display:none}.sl.c,.sl.s{display:block;flex-basis:62%;height:340px}.sl.s{flex-basis:20%;height:290px}.car{padding:0 20px;height:350px}.arr{display:none}}
+ @media (max-width:560px){padding:8px;.grid{grid-template-columns:1fr}.cd div{width:64px}.cd b{font-size:26px}.pill.hide{display:none}.auth-box{padding:22px}}
  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 }

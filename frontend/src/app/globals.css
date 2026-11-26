@@ -1,62 +1,62 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Kinetic Campus / Stitch Design System Colors */
-  --color-background: #fbf8fc;
-  --color-on-background: #1b1b1e;
-  --color-canvas-warm: #faf7f0;
-  --color-border-warm: #e8e2d5;
+  /* EventHub Dark Purple Theme Colors */
+  --color-background: #13111c;
+  --color-on-background: #ffffff;
+  --color-canvas-warm: #181523;
+  --color-border-warm: rgba(255, 255, 255, 0.12);
 
-  --color-surface: #fbf8fc;
-  --color-surface-bright: #fbf8fc;
-  --color-surface-dim: #dcd9dd;
-  --color-surface-variant: #e4e1e6;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f6f2f7;
-  --color-surface-container: #f0edf1;
-  --color-surface-container-high: #eae7eb;
-  --color-surface-container-highest: #e4e1e6;
+  --color-surface: #181523;
+  --color-surface-bright: #221c32;
+  --color-surface-dim: #13111c;
+  --color-surface-variant: #26203a;
+  --color-surface-container-lowest: #1d1929;
+  --color-surface-container-low: #171422;
+  --color-surface-container: #221c32;
+  --color-surface-container-high: #29223c;
+  --color-surface-container-highest: #332b4b;
 
-  --color-on-surface: #1b1b1e;
-  --color-on-surface-variant: #5a403f;
-  --color-inverse-surface: #303033;
-  --color-inverse-on-surface: #f3f0f4;
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #b0aabf;
+  --color-inverse-surface: #f3f0f4;
+  --color-inverse-on-surface: #1b1b1e;
 
-  --color-outline: #8e706f;
-  --color-outline-variant: #e2bebc;
+  --color-outline: rgba(255, 255, 255, 0.2);
+  --color-outline-variant: rgba(255, 255, 255, 0.1);
 
-  --color-primary: #b52330;
+  --color-primary: #e040fb;
   --color-on-primary: #ffffff;
-  --color-primary-container: #ff5a5f;
-  --color-on-primary-container: #61000e;
-  --color-primary-fixed: #ffdad8;
-  --color-primary-fixed-dim: #ffb3b0;
-  --color-on-primary-fixed: #410007;
-  --color-on-primary-fixed-variant: #92001b;
+  --color-primary-container: #d61cff;
+  --color-on-primary-container: #ffffff;
+  --color-primary-fixed: rgba(214, 28, 255, 0.22);
+  --color-primary-fixed-dim: rgba(214, 28, 255, 0.15);
+  --color-on-primary-fixed: #e040fb;
+  --color-on-primary-fixed-variant: #d61cff;
   --color-inverse-primary: #ffb3b0;
 
-  --color-secondary: #855300;
-  --color-on-secondary: #ffffff;
+  --color-secondary: #ffb020;
+  --color-on-secondary: #13111c;
   --color-secondary-container: #fea619;
-  --color-on-secondary-container: #684000;
-  --color-secondary-fixed: #ffddb8;
-  --color-secondary-fixed-dim: #ffb95f;
-  --color-on-secondary-fixed: #2a1700;
-  --color-on-secondary-fixed-variant: #653e00;
+  --color-on-secondary-container: #13111c;
+  --color-secondary-fixed: rgba(255, 176, 32, 0.22);
+  --color-secondary-fixed-dim: rgba(255, 176, 32, 0.15);
+  --color-on-secondary-fixed: #ffb020;
+  --color-on-secondary-fixed-variant: #ff9a3c;
 
-  --color-tertiary: #006c49;
-  --color-on-tertiary: #ffffff;
+  --color-tertiary: #3ddc97;
+  --color-on-tertiary: #13111c;
   --color-tertiary-container: #00a874;
-  --color-on-tertiary-container: #003421;
-  --color-tertiary-fixed: #6ffbbe;
-  --color-tertiary-fixed-dim: #4edea3;
-  --color-on-tertiary-fixed: #002113;
-  --color-on-tertiary-fixed-variant: #005236;
+  --color-on-tertiary-container: #ffffff;
+  --color-tertiary-fixed: rgba(61, 220, 151, 0.22);
+  --color-tertiary-fixed-dim: rgba(61, 220, 151, 0.15);
+  --color-on-tertiary-fixed: #3ddc97;
+  --color-on-tertiary-fixed-variant: #00a874;
 
-  --color-error: #ba1a1a;
+  --color-error: #ff5050;
   --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
+  --color-error-container: rgba(255, 80, 80, 0.2);
+  --color-on-error-container: #ff8080;
 
   /* Google Fonts mapped from next/font/google CSS variables */
   --font-display: var(--font-plus-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
@@ -85,6 +85,16 @@
     font-family: var(--font-sans);
     overscroll-behavior: none;
   }
+}
+
+/* EventHub Universal Dark Theme Overrides */
+.border-\[\#E8E2D5\],
+.border-\[\#E8E2D5\]\/70 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.bg-\[\#FAF7F0\],
+.bg-\[\#FAF7F0\]\/95 {
+  background-color: #161320 !important;
 }
 
 /* Stitch Kinetic Campus Typography Utilities */

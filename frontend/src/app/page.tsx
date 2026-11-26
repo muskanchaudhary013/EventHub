@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { QuickRegistrationModal } from "@/components/QuickRegistrationModal";
 import { QrCodeSvg } from "@/components/QrCodeSvg";
@@ -9,8 +9,8 @@ import { useEventHub } from "@/context/EventHubContext";
 import { getDashboardPath, useAuth } from "@/context/AuthContext";
 import "./home.css";
 
-// TODO(team): set the real fest start date. The hero countdown runs to this moment.
-const FEST_START_ISO = "2026-12-12T09:00:00+05:30";
+// Fest start date: aligned with upcoming festival timeline (Fri Dec 11, 2026 09:00 IST)
+const FEST_START_ISO = "2026-12-11T09:00:00+05:30";
 
 const TRACKS: Array<{ id: TrackCategory; label: string; tile: string }> = [
   { id: "hackathon", label: "Hackathons & AI", tile: "linear-gradient(135deg,#ff4fd8,#3b1a7a)" },
@@ -58,12 +58,86 @@ export default function EventDiscoveryPage() {
   const [scanning, setScanning] = useState(false);
   const [scanTime, setScanTime] = useState("");
 
+  // Smart sticky header: hide when scrolling down, reveal when scrolling up
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    let prevScrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 20);
+
+      if (currentScrollY > 75) {
+        if (currentScrollY > prevScrollY + 6) {
+          setIsHeaderHidden(true);
+        } else if (currentScrollY < prevScrollY - 6) {
+          setIsHeaderHidden(false);
+        }
+      } else {
+        setIsHeaderHidden(false);
+      }
+      prevScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Smooth touch & mouse drag swipe for the event carousel
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const didDrag = useRef(false);
+  const lastWheelTime = useRef(0);
+
   const n = events.length;
   const featured = events.find((e) => e.featured) || events[0];
   const slides = useMemo(
     () => [-2, -1, 0, 1, 2].map((o) => ({ o, e: events[(((ci + o) % n) + n) % n] })),
     [events, ci, n]
   );
+
+  const handleDragStart = (clientX: number) => {
+    setIsDragging(true);
+    dragStartX.current = clientX;
+    didDrag.current = false;
+  };
+
+  const handleDragMove = (clientX: number) => {
+    if (!isDragging) return;
+    const delta = clientX - dragStartX.current;
+    if (Math.abs(delta) > 6) {
+      didDrag.current = true;
+    }
+    const dampened = Math.sign(delta) * Math.min(Math.abs(delta), 130);
+    setDragOffset(dampened);
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (dragOffset < -35) {
+      setCi((prev) => (prev + 1) % n);
+    } else if (dragOffset > 35) {
+      setCi((prev) => (prev - 1 + n) % n);
+    }
+    setDragOffset(0);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) > 20) {
+      const now = Date.now();
+      if (now - lastWheelTime.current > 350) {
+        lastWheelTime.current = now;
+        if (e.deltaX > 0) {
+          setCi((prev) => (prev + 1) % n);
+        } else {
+          setCi((prev) => (prev - 1 + n) % n);
+        }
+      }
+    }
+  };
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -91,21 +165,23 @@ export default function EventDiscoveryPage() {
   return (
     <div className="eh">
       <div className="app" id="top">
-        <header className="nav">
-          <Link className="logo" href="/"><i />EventHub</Link>
-          <nav aria-label="Main">
-            <Link className="on" href="/">Home</Link>
-            <a href="#events">Events</a>
-            <Link href="/passes">My Passes</Link>
-            <Link href="/faq">FAQ</Link>
-          </nav>
-          <div className="r">
-            <Link className="pill hide" href="/login?selectRole=1">Create event</Link>
-            <Link className="pill" href={user && role ? getDashboardPath(role) : "/login"}>
-              {user ? "Dashboard" : "Sign in"}
-            </Link>
-          </div>
-        </header>
+        <div className={`nav-sticky-wrap ${isHeaderHidden ? "nav-hidden" : ""} ${isScrolled ? "nav-scrolled" : ""}`}>
+          <header className="nav">
+            <Link className="logo" href="/"><i />EventHub</Link>
+            <nav aria-label="Main">
+              <Link className="on" href="/">Home</Link>
+              <a href="#events">Events</a>
+              <Link href="/passes">My Passes</Link>
+              <Link href="/faq">FAQ</Link>
+            </nav>
+            <div className="r">
+              <Link className="pill hide" href="/login?selectRole=1">Create event</Link>
+              <Link className="pill" href={user && role ? getDashboardPath(role) : "/login"}>
+                {user ? "Dashboard" : "Sign in"}
+              </Link>
+            </div>
+          </header>
+        </div>
 
         <section className="hero pad">
           <h1>One pass gets you <b>in!</b></h1>
@@ -115,33 +191,50 @@ export default function EventDiscoveryPage() {
             <div><b>{cd.m}</b>Minutes</div><div><b>{cd.s}</b>Seconds</div>
           </div>
           <div className="cdl">until the fest begins</div>
-          <div className="car">
-            <button className="arr p" aria-label="Previous event" onClick={() => setCi((ci - 1 + n) % n)}>‹</button>
-            {slides.map(({ o, e }) => (
-              <button
-                key={o}
-                className={`sl${o === 0 ? " c" : ""}${Math.abs(o) === 1 ? " s" : ""}`}
-                style={bg(e)}
-                aria-label={o === 0 ? `Register for ${e.title}` : `Show ${e.title}`}
-                onClick={() => (o === 0 ? setSelected(e) : setCi((ci + o + n) % n))}
-              >
-                <div className="dt">{dayLabel(e)}</div>
-                <div className="ov" />
-                <div className="tx"><h3>{e.title}</h3><small>{e.venue}, {e.registeredCount}/{e.capacityCount} registered</small></div>
-              </button>
-            ))}
-            <button className="arr n" aria-label="Next event" onClick={() => setCi((ci + 1) % n)}>›</button>
+          <div
+            className={`car ${isDragging ? "grabbing" : ""}`}
+            onTouchStart={(e) => handleDragStart(e.touches[0].clientX)}
+            onTouchMove={(e) => handleDragMove(e.touches[0].clientX)}
+            onTouchEnd={handleDragEnd}
+            onTouchCancel={handleDragEnd}
+            onMouseDown={(e) => handleDragStart(e.clientX)}
+            onMouseMove={(e) => handleDragMove(e.clientX)}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+            onWheel={handleWheel}
+          >
+            <button className="arr p" aria-label="Previous event" onClick={(e) => { e.stopPropagation(); setCi((ci - 1 + n) % n); }}>‹</button>
+            <div
+              className="car-track"
+              style={{
+                transform: `translateX(${dragOffset}px)`,
+                transition: isDragging ? "none" : "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              {slides.map(({ o, e }) => (
+                <button
+                  key={o}
+                  className={`sl${o === 0 ? " c" : ""}${Math.abs(o) === 1 ? " s" : ""}`}
+                  style={bg(e)}
+                  aria-label={o === 0 ? `Register for ${e.title}` : `Show ${e.title}`}
+                  onClick={() => {
+                    if (didDrag.current) return;
+                    o === 0 ? setSelected(e) : setCi((ci + o + n) % n);
+                  }}
+                >
+                  <div className="dt">{dayLabel(e)}</div>
+                  <div className="ov" />
+                  <div className="tx">
+                    <h3>{e.title}</h3>
+                    <small>{e.venue}, {e.registeredCount}/{e.capacityCount} registered</small>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <button className="arr n" aria-label="Next event" onClick={(e) => { e.stopPropagation(); setCi((ci + 1) % n); }}>›</button>
           </div>
-        </section>
-
-        <section className="sec pad">
-          <div className="sh"><h2>Event tracks</h2><button className="pill" onClick={() => setCat("all")}>All tracks ↗</button></div>
-          <div className="cats">
-            {TRACKS.map((t) => (
-              <button key={t.id} aria-pressed={cat === t.id} onClick={() => setCat(t.id)}>
-                <i style={{ background: t.tile }} />{t.label}
-              </button>
-            ))}
+          <div className="car-hint">
+            <span>‹ Swipe left or right to explore events ›</span>
           </div>
         </section>
 
@@ -149,6 +242,14 @@ export default function EventDiscoveryPage() {
           <h2 className="ttl">Trending at the fest</h2>
           <div className="bar">
             <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search events or venues" aria-label="Search events" />
+            <select value={cat} onChange={(e) => setCat(e.target.value as TrackCategory)} aria-label="Track">
+              <option value="all">All tracks</option>
+              <option value="hackathon">Hackathons &amp; AI</option>
+              <option value="robotics">Robotics &amp; Hardware</option>
+              <option value="design">Design &amp; UI/UX</option>
+              <option value="cultural">Cultural &amp; Music</option>
+              <option value="esports">Esports &amp; Gaming</option>
+            </select>
             <select value={day} onChange={(e) => setDay(e.target.value as typeof day)} aria-label="Day">
               <option value="all">Any day</option><option value="fri">Fri</option><option value="sat">Sat</option><option value="sun">Sun</option>
             </select>
