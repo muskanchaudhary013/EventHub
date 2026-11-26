@@ -86,8 +86,7 @@ export interface AttendeeRecord {
   gateLocation: string;
 }
 
-export const BRAND_LOGO_URL =
-  "https://lh3.googleusercontent.com/aida/ALJJyrDV99JuwiUdGvD_jnJR1xVoGy7gSeHEjkB7HOe3v3hRGd9aDYUvPuosgyMGHY3_9kidaD3dnDdOlc4eHGaxCr98Hn8ewpUIQr2SZjoQIoZSX6Wtci-wmH92qNAhbbB_BRTeeja_ZjU_qjWuixikLLtFJqzRXG5aFrKiAZ8GrV4qXFB0iNNB5lighOmZb3F89LVUBpRwEB-997sTzD7ATZh4hAj2uhWQPjyqEgs82t6U";
+export const BRAND_LOGO_URL = "/logo.png";
 
 export const SCANNER_BG_URL =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCd0z40ueULmgwn33vwF2Ce2GvGHV5R7jrmpZxMOAkjgddrvlCZwFdXjm3tm8TcRIovD13QJSY4mDgvFoCsG7nleXCeu6RfOLMN1q6vUMGLiEUCon1yt2rIWHXZ8zel86uzO07Bf9J2kmscf3oq-FpKUXW_vjfeuFiqQLp7VogRqVdnIY3agoJC3TcksJUVrUD7yRtXAPFLcOVStUVPf1Ufh1IwjDX2sICdq6hC7o0";

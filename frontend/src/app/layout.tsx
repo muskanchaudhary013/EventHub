@@ -33,9 +33,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EventHub — College Fest & Hackathon Ops Platform",
+  title: "EventHub — Discover. Register. Experience.",
   description:
-    "Discover campus events, issue instant digital QR passes, manage fast gate check-ins, and run multi-track collegiate fests seamlessly.",
+    "Your gateway to every Hack4Tech event. Discover campus events, issue instant digital QR passes, manage fast gate check-ins, and run multi-track fests seamlessly.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -48,7 +52,7 @@ export default function RootLayout({
       lang="en"
       className={`${plusJakartaSans.variable} ${inter.variable} ${jetbrainsMono.variable} ${montserrat.variable}`}
     >
-      <body className="bg-background text-on-surface font-sans antialiased selection:bg-primary-container/20 selection:text-primary">
+      <body className="bg-background text-on-surface font-sans antialiased selection:bg-primary-container/25 selection:text-primary">
         <AuthProvider>
           <EventHubProvider>{children}</EventHubProvider>
         </AuthProvider>

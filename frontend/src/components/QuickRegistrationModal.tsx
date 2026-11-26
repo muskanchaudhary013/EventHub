@@ -3,15 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
   BadgeCheck,
   Calendar,
-  Check,
-  CheckCircle2,
-  Info,
   Loader2,
   MapPin,
-  Sparkles,
-  Ticket,
   X,
 } from "lucide-react";
 import { DigitalPass, EventItem } from "@/lib/eventhub-data";
@@ -66,7 +62,7 @@ export function QuickRegistrationModal({
       });
       setIssuedPass(pass);
       setStatus("done");
-    }, 600);
+    }, 550);
   };
 
   return (
@@ -75,9 +71,9 @@ export function QuickRegistrationModal({
         position: "fixed",
         inset: 0,
         zIndex: 100,
-        backgroundColor: "rgba(0, 0, 0, 0.75)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        backgroundColor: "rgba(5, 3, 12, 0.8)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -88,29 +84,29 @@ export function QuickRegistrationModal({
       <div
         style={{
           width: "100%",
-          maxWidth: 540,
-          backgroundColor: "#181523",
-          border: "1.5px solid rgba(214, 28, 255, 0.45)",
-          borderRadius: 24,
-          boxShadow: "0 0 60px rgba(214, 28, 255, 0.35)",
+          maxWidth: 530,
+          background: "linear-gradient(165deg, #16112b 0%, #0e0b1b 100%)",
+          border: "1px solid rgba(192, 132, 252, 0.45)",
+          borderRadius: 22,
+          boxShadow: "0 24px 70px -10px rgba(124, 58, 237, 0.48)",
           overflow: "hidden",
-          color: "#fff",
-          fontFamily: "var(--font-montserrat), system-ui, sans-serif",
+          color: "#f8f7fc",
+          fontFamily: "var(--font-plus-jakarta), var(--font-inter), system-ui, sans-serif",
           maxHeight: "92vh",
           display: "flex",
           flexDirection: "column",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
+        {/* Header */}
         <div
           style={{
-            padding: "16px 24px",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            padding: "16px 22px",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            background: "rgba(255, 255, 255, 0.03)",
+            background: "rgba(255, 255, 255, 0.02)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -119,63 +115,51 @@ export function QuickRegistrationModal({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: "var(--mag)",
-                boxShadow: "0 0 10px var(--mag)",
+                background: "#a855f7",
+                boxShadow: "0 0 10px #a855f7",
               }}
             />
-            <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--muted)" }}>
-              Instant Pass Dispatch • 30s Check-In
+            <span style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#d8b4fe" }}>
+              Instant QR Pass Registration
             </span>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: "50%",
-              background: "rgba(255, 255, 255, 0.1)",
-              border: 0,
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
+            className="eh-icon-btn"
+            style={{ width: 32, height: 32 }}
           >
-            <X style={{ width: 16, height: 16 }} />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         <form onSubmit={handleConfirm} style={{ padding: 24, overflowY: "auto", display: "flex", flexDirection: "column", gap: 16 }}>
-          {/* Event Context */}
           <div>
-            <span style={{ color: "var(--mag)", fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".05em" }}>
-              {event.trackCode} • {event.categoryLabel}
-            </span>
-            <h3 style={{ fontSize: 20, fontWeight: 800, margin: "4px 0 6px" }}>
+            <span className="eh-pill-badge">{event.categoryLabel}</span>
+            <h3 style={{ fontSize: 21, fontWeight: 800, margin: "10px 0 6px", color: "#fff" }}>
               {event.title}
             </h3>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "var(--muted)", fontSize: 13 }}>
-              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <Calendar style={{ width: 14, height: 14 }} />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 14, color: "#a69ec2", fontSize: 13 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Calendar className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
                 {event.dateFull}
               </span>
-              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <MapPin style={{ width: 14, height: 14 }} />
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <MapPin className="w-3.5 h-3.5" style={{ color: "#c084fc" }} />
                 {event.venue}
               </span>
             </div>
           </div>
 
-          {/* Registration Type Switcher */}
+          {/* Solo / Team Switch */}
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: 6,
-              background: "rgba(0, 0, 0, 0.35)",
+              background: "rgba(9, 7, 18, 0.75)",
+              border: "1px solid rgba(255,255,255,0.08)",
               padding: 4,
               borderRadius: 999,
             }}
@@ -184,11 +168,11 @@ export function QuickRegistrationModal({
               type="button"
               onClick={() => setRegType("solo")}
               style={{
-                background: regType === "solo" ? "var(--g)" : "transparent",
-                color: "#fff",
+                background: regType === "solo" ? "linear-gradient(135deg, #c084fc, #7c3aed)" : "transparent",
+                color: regType === "solo" ? "#fff" : "#a69ec2",
                 border: 0,
                 borderRadius: 999,
-                padding: "8px 16px",
+                padding: "8px 14px",
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: "pointer",
@@ -200,96 +184,68 @@ export function QuickRegistrationModal({
               type="button"
               onClick={() => setRegType("team")}
               style={{
-                background: regType === "team" ? "var(--g)" : "transparent",
-                color: "#fff",
+                background: regType === "team" ? "linear-gradient(135deg, #c084fc, #7c3aed)" : "transparent",
+                color: regType === "team" ? "#fff" : "#a69ec2",
                 border: 0,
                 borderRadius: 999,
-                padding: "8px 16px",
+                padding: "8px 14px",
                 fontSize: 13,
                 fontWeight: 700,
                 cursor: "pointer",
               }}
             >
-              Squad / Team (Up to 4)
+              Squad / Team
             </button>
           </div>
 
-          {/* Input Fields */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
-                Lead Attendee Name
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#cfc9e4", marginBottom: 6 }}>
+                Attendee Full Name
               </label>
               <input
                 type="text"
                 required
+                className="eh-input"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                style={{
-                  width: "100%",
-                  background: "rgba(25, 22, 35, 0.8)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  borderRadius: 12,
-                  color: "#fff",
-                  padding: "10px 14px",
-                  fontSize: 14,
-                  boxSizing: "border-box",
-                }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#cfc9e4", marginBottom: 6 }}>
                 Campus Email Address
               </label>
               <input
                 type="email"
                 required
+                className="eh-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%",
-                  background: "rgba(25, 22, 35, 0.8)",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  borderRadius: 12,
-                  color: "#fff",
-                  padding: "10px 14px",
-                  fontSize: 14,
-                  boxSizing: "border-box",
-                }}
               />
             </div>
 
             {regType === "team" && (
               <div>
-                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--muted)", marginBottom: 6, textTransform: "uppercase" }}>
-                  Squad / Team Codename
+                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#cfc9e4", marginBottom: 6 }}>
+                  Team / Squad Name
                 </label>
                 <input
                   type="text"
+                  className="eh-input"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  placeholder="e.g. QuantumLeap-0x"
-                  style={{
-                    width: "100%",
-                    background: "rgba(25, 22, 35, 0.8)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    borderRadius: 12,
-                    color: "#fff",
-                    padding: "10px 14px",
-                    fontSize: 14,
-                    boxSizing: "border-box",
-                  }}
+                  placeholder="e.g. Byte Busters"
                 />
               </div>
             )}
           </div>
 
-          {/* Pass Preview Mini Card */}
+          {/* Live QR Pass Preview */}
           <div
             style={{
-              background: "linear-gradient(135deg, #24143d, #19122c)",
-              border: "1px solid rgba(214, 28, 255, 0.35)",
+              background: "linear-gradient(135deg, rgba(139, 92, 246, 0.16), rgba(16, 13, 30, 0.9))",
+              border: "1px solid rgba(192, 132, 252, 0.35)",
               borderRadius: 16,
               padding: 16,
               display: "flex",
@@ -299,37 +255,33 @@ export function QuickRegistrationModal({
             }}
           >
             <div>
-              <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--mint)", fontWeight: 700 }}>
-                {issuedPass ? "Pass Issued Live ✓" : "Pre-Accredited Gate Pass"}
+              <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "#34d399", fontWeight: 700 }}>
+                {issuedPass ? "Pass Issued Live ✓" : "Pre-Accredited Gate Token"}
               </span>
-              <div style={{ font: "700 15px ui-monospace,Menlo,monospace", marginTop: 4 }}>
+              <div style={{ fontFamily: "var(--font-jetbrains-mono), monospace", fontWeight: 700, fontSize: 14.5, marginTop: 4, color: "#fff" }}>
                 {issuedPass ? issuedPass.passCode : `EH-2026-${event.trackCode}`}
               </div>
-              <small style={{ color: "var(--muted)", fontSize: 12 }}>
-                {fullName} • {regType === "team" ? "Squad Pass" : "Solo Pass"}
+              <small style={{ color: "#a69ec2", fontSize: 12 }}>
+                {fullName} · {regType === "team" ? "Team Pass" : "Solo Pass"}
               </small>
             </div>
-            <div style={{ width: 64, height: 64, background: "#fff", borderRadius: 8, padding: 4, flexShrink: 0 }}>
+            <div style={{ width: 64, height: 64, background: "#fff", borderRadius: 10, padding: 5, flexShrink: 0, color: "#090712" }}>
               <QrCodeSvg size="sm" seed={issuedPass?.passCode || event.trackCode} />
             </div>
           </div>
 
-          {/* Actions */}
           {status === "done" && issuedPass ? (
-            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+            <div style={{ display: "flex", gap: 10 }}>
               <Link
                 href="/passes"
                 onClick={onClose}
-                className="btn"
-                style={{ flex: 1, textAlign: "center", textDecoration: "none" }}
+                className="eh-btn-primary"
+                style={{ flex: 1, textDecoration: "none" }}
               >
-                Open in My Passes →
+                Open in My Passes
+                <ArrowRight className="w-4 h-4" />
               </Link>
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn-secondary"
-              >
+              <button type="button" onClick={onClose} className="eh-btn-outline">
                 Done
               </button>
             </div>
@@ -337,19 +289,19 @@ export function QuickRegistrationModal({
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="btn"
-              style={{ width: "100%", padding: "12px 24px", fontSize: 14 }}
+              className="eh-btn-primary"
+              style={{ width: "100%", height: 46 }}
             >
               {status === "submitting" ? (
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} />
-                  Dispatching Cryptographic Pass...
-                </span>
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating Cryptographic Pass...
+                </>
               ) : (
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <BadgeCheck style={{ width: 18, height: 18 }} />
-                  Generate &amp; Claim Entry Pass
-                </span>
+                <>
+                  <BadgeCheck className="w-4 h-4" />
+                  Confirm &amp; Get QR Pass
+                </>
               )}
             </button>
           )}

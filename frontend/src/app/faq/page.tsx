@@ -3,15 +3,17 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
+  ArrowRight,
+  ChevronDown,
   HelpCircle,
   Lock,
+  Mail,
   QrCode,
+  Search,
   ShieldCheck,
+  Sparkles,
   Users,
   Wrench,
-  Search,
-  Sparkles,
-  ChevronDown,
 } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
@@ -30,50 +32,50 @@ const FAQS: FaqItem[] = [
     icon: QrCode,
     category: "passes",
     categoryLabel: "Passes & QR",
-    title: "How do digital QR passes work offline?",
-    body: "Each issued pass stores a cryptographic SHA-256 validation token on your device. Even if venue Wi-Fi slows down during peak check-in rushes, gate scanners validate your pass in under a second.",
-  },
-  {
-    icon: Wrench,
-    category: "rules",
-    categoryLabel: "Safety & Hardware",
-    title: "What are the RoboWars and hardware safety rules?",
-    body: "Hardware hackathon and RoboWars entrants must inspect and tag LiPo battery packs and pneumatic cylinders at Turing Hall Mech Hangar B before entering the competition octagon.",
-  },
-  {
-    icon: ShieldCheck,
-    category: "gates",
-    categoryLabel: "Gate Check-in",
-    title: "What happens if a pass triggers a duplicate scan alert?",
-    body: "Gate volunteers immediately see a yellow warning banner with the original turnstile ID and timestamp. Attendees can present a matching student ID at the Admin Help Desk to resolve the duplicate check-in.",
+    title: "Can I register for multiple events?",
+    body: "Yes! You can register for as many Hack4Tech tracks, workshops, and competitions as you like. Every registration issues its own unique cryptographic QR pass inside your My Passes wallet.",
   },
   {
     icon: Users,
     category: "teams",
     categoryLabel: "Team Registration",
-    title: "How do team registrations and member passes work?",
-    body: "When a team lead registers a squad, all accredited teammates receive identical passes under the shared team booth ID. Teammates can walk through turnstiles together or individually.",
+    title: "Is team registration mandatory for all events?",
+    body: "No. Solo events (like PromptCraft and Keynotes) require only individual sign-up, hybrid tracks let you enter solo or with a team, and squad competitions like RoboWars or Valorant let a team lead register the whole roster under one booth ID.",
+  },
+  {
+    icon: Mail,
+    category: "passes",
+    categoryLabel: "Passes & QR",
+    title: "How do I retrieve my QR pass?",
+    body: "Open the My Passes page from the top navigation bar or click 'Retrieve Pass' below. Passes are cached locally for instant offline access, or you can enter your campus email to resend your pass link anytime.",
+  },
+  {
+    icon: ShieldCheck,
+    category: "gates",
+    categoryLabel: "Gate Check-In",
+    title: "What happens if a pass triggers a duplicate scan alert?",
+    body: "Gate volunteers immediately see a warning showing the original gate and timestamp. Present a matching university photo ID at the Admin Help Desk to clear an accidental double tap.",
+  },
+  {
+    icon: Wrench,
+    category: "rules",
+    categoryLabel: "Safety & Hardware",
+    title: "What are the Hardware Bay & RoboWars safety rules?",
+    body: "Hardware hackathon and RoboWars entrants must inspect and tag LiPo battery packs and soldering equipment at Mech Hangar B / Turing Hall Loading Bay before entering pit tables.",
   },
   {
     icon: Sparkles,
     category: "passes",
     categoryLabel: "Certificates",
     title: "Are participation certificates and prize tokens verified?",
-    body: "Yes, organizers issue verifiable credentials directly to your student email. Every accredited attendee with a valid gate check-in receives their digital badge immediately after closing ceremonies.",
-  },
-  {
-    icon: Lock,
-    category: "rules",
-    categoryLabel: "Security",
-    title: "Can I transfer or screenshot my digital pass?",
-    body: "Passes are bound to your student profile and verified against the live gate manifest. We recommend saving your pass to Apple Wallet or opening EventHub directly at the gate for fastest entry.",
+    body: "Yes. Every accredited attendee with a valid gate check-in automatically receives verifiable participation certificates and prize claim tokens after the closing ceremony.",
   },
 ];
 
 export default function FaqPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<string>("all");
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const filteredFaqs = FAQS.filter((faq) => {
     const matchesFilter = filter === "all" || faq.category === filter;
@@ -86,121 +88,117 @@ export default function FaqPage() {
 
   return (
     <div className="eh">
-      <div className="app" id="top">
-        <PublicHeader />
+      <PublicHeader />
 
-        <main className="pad">
-          {/* Page Hero Header */}
-          <div className="page-title-wrap">
-            <div className="page-tag">
-              <HelpCircle style={{ width: 14, height: 14 }} />
-              Gate Knowledge Base
-            </div>
-            <h1 className="page-h1">Frequently Asked Questions</h1>
-            <p className="page-sub">
-              Everything students, gate volunteers, and fest organizers need for fast, seamless accreditation and turnstile operations.
-            </p>
+      <main className="container">
+        <section className="eh-sub-hero">
+          <div className="eh-sub-tag">
+            <HelpCircle className="w-3.5 h-3.5" />
+            Help Center &amp; Gate Guidelines
+          </div>
+          <h1 className="eh-sub-h1">Frequently Asked Questions</h1>
+          <p className="eh-sub-p">
+            Everything students, gate volunteers, and fest organizers need for smooth registration, QR passes, and instant turnstile check-ins.
+          </p>
 
-            {/* Search and Category Filter Bar */}
-            <div className="bar" style={{ marginTop: 26 }}>
+          <div className="eh-filter-bar" style={{ maxWidth: 760, margin: "28px auto 0" }}>
+            <div className="eh-search-wrap">
+              <Search className="w-4 h-4" />
               <input
                 type="search"
+                className="eh-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search rules, passes, or gate check-in..."
-                aria-label="Search FAQ"
+                placeholder="Search passes, team rules, or gate check-in..."
+                aria-label="Search FAQs"
               />
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                aria-label="Filter by category"
-              >
-                <option value="all">All Topics</option>
-                <option value="passes">Passes &amp; QR</option>
-                <option value="gates">Gate Check-in</option>
-                <option value="teams">Team Squads</option>
-                <option value="rules">Safety &amp; Rules</option>
-              </select>
             </div>
+            <select
+              className="eh-select-pill primary"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              aria-label="Filter FAQ category"
+            >
+              <option value="all">All Topics</option>
+              <option value="passes">Passes &amp; QR</option>
+              <option value="gates">Gate Check-In</option>
+              <option value="teams">Team Registration</option>
+              <option value="rules">Safety &amp; Rules</option>
+            </select>
           </div>
+        </section>
 
-          {/* FAQ Cards Grid */}
-          <div className="faq-grid">
-            {filteredFaqs.map((faq, index) => {
+        <section className="eh-section" style={{ paddingTop: 12 }}>
+          <div className="eh-faq-list" style={{ maxWidth: 880, margin: "0 auto" }}>
+            {filteredFaqs.map((faq, idx) => {
               const Icon = faq.icon;
-              const isOpen = openIndex === index;
+              const isOpen = openIndex === idx;
               return (
-                <div
-                  key={faq.title}
-                  className="faq-card"
-                  onClick={() => setOpenIndex(isOpen ? null : index)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                    <div className="faq-icon-box" style={{ marginBottom: 0 }}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        textTransform: "uppercase",
-                        letterSpacing: ".06em",
-                        color: "var(--muted)",
-                        fontWeight: 700,
-                        border: "1px solid var(--line)",
-                        borderRadius: 999,
-                        padding: "4px 10px",
-                      }}
-                    >
-                      {faq.categoryLabel}
+                <div key={faq.title} className={`eh-faq-item ${isOpen ? "open" : ""}`}>
+                  <button
+                    type="button"
+                    className="eh-faq-trigger"
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  >
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+                      <span
+                        style={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 10,
+                          background: "rgba(139, 92, 246, 0.2)",
+                          border: "1px solid rgba(192, 132, 252, 0.35)",
+                          color: "#d8b4fe",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </span>
+                      <span>{faq.title}</span>
                     </span>
-                  </div>
-                  <h3>{faq.title}</h3>
-                  <p style={{ marginTop: 6 }}>{faq.body}</p>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  {isOpen && (
+                    <div className="eh-faq-answer" style={{ paddingLeft: 66 }}>
+                      {faq.body}
+                    </div>
+                  )}
                 </div>
               );
             })}
+
+            {filteredFaqs.length === 0 && (
+              <div className="eh-empty">
+                No FAQs match your search. Try another keyword or switch to All Topics.
+              </div>
+            )}
           </div>
 
-          {filteredFaqs.length === 0 && (
-            <div className="empty" style={{ margin: "30px 0" }}>
-              No questions found matching your search. Try another keyword or browse all topics.
-            </div>
-          )}
-
-          {/* Bottom Security Banner */}
-          <div className="faq-banner">
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <div
-                style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: "50%",
-                  background: "rgba(224,64,251,.2)",
-                  color: "var(--mag)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Lock style={{ width: 24, height: 24 }} />
+          <div className="eh-retrieve-banner" style={{ maxWidth: 880, margin: "34px auto 0" }}>
+            <div className="eh-retrieve-left">
+              <div className="eh-retrieve-icon">
+                <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Ready to head to the turnstile?</h3>
-                <p style={{ color: "var(--muted)", fontSize: 14, margin: "4px 0 0" }}>
-                  Your cryptographic entry pass is pre-cached on your device. Show your QR token at Gate 1 or 2.
-                </p>
+                <strong>Already registered? Access your digital QR pass</strong>
+                <div style={{ fontSize: 13, color: "#cfc9e4", marginTop: 2 }}>
+                  All passes work offline with cryptographic signature verification.
+                </div>
               </div>
             </div>
-            <Link className="btn" href="/passes">
-              View My Passes →
+            <Link className="eh-btn-primary" href="/passes">
+              View My Passes
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </main>
+        </section>
+      </main>
 
-        <PublicFooter />
-      </div>
+      <PublicFooter />
     </div>
   );
 }

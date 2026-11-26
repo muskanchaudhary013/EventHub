@@ -47,8 +47,8 @@ export function OpsShell({
             icon: GraduationCap,
           },
           { href: "/passes", label: "My QR Passes", icon: Ticket },
-          { href: "/", label: "Explore Events", icon: CalendarDays },
-          { href: "/faq", label: "FAQ & Help", icon: HelpCircle },
+          { href: "/", label: "Discover Events", icon: CalendarDays },
+          { href: "/faq", label: "FAQs & Help", icon: HelpCircle },
         ]
       : role === "volunteer"
         ? [
@@ -95,10 +95,13 @@ export function OpsShell({
         : "Organizer Account";
 
   const SidebarContent = (
-    <div className="h-full flex flex-col pt-6 pb-6 bg-[#181523] text-white">
+    <div className="h-full flex flex-col pt-6 pb-6 bg-[#0E0B1A] text-white">
       <div className="px-6 mb-6 flex items-center justify-between">
-        <Link href="/" className="logo text-white">
-          <i />EventHub
+        <Link href="/" className="eh-brand text-white">
+          <img src="/logo.png" alt="EventHub" className="eh-brand-logo" style={{ width: 30, height: 30 }} />
+          <span>
+            EVENT<span className="accent">HUB</span>
+          </span>
         </Link>
         <button
           type="button"
@@ -111,7 +114,7 @@ export function OpsShell({
       </div>
 
       <div className="px-4 mb-3">
-        <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#D61CFF]/20 text-[#E040FB] border border-[#D61CFF]/40">
+        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/35">
           {roleBadgeLabel}
         </span>
       </div>
@@ -130,8 +133,8 @@ export function OpsShell({
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13.5px] whitespace-nowrap transition-all ${
                 isActive
-                  ? "bg-gradient-to-r from-[#D61CFF] to-[#8A2BE2] text-white font-bold shadow-md shadow-[#D61CFF]/25"
-                  : "text-white/70 hover:bg-white/10 hover:text-white"
+                  ? "bg-gradient-to-r from-[#c084fc] via-[#9333ea] to-[#7c3aed] text-white font-bold shadow-md shadow-purple-600/30"
+                  : "text-white/70 hover:bg-purple-500/10 hover:text-white"
               }`}
             >
               <Icon className="w-[18px] h-[18px] shrink-0" />
@@ -141,9 +144,9 @@ export function OpsShell({
         })}
       </nav>
 
-      <div className="px-4 pt-4 border-t border-white/10 space-y-2">
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl bg-white/5 border border-white/10">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D61CFF] to-[#8A2BE2] flex items-center justify-center shrink-0 text-white font-bold text-xs">
+      <div className="px-4 pt-4 border-t border-purple-500/15 space-y-2">
+        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl bg-white/5 border border-purple-500/15">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c084fc] to-[#7c3aed] flex items-center justify-center shrink-0 text-white font-bold text-xs">
             {userInitials}
           </div>
           <div className="flex flex-col min-w-0 leading-tight">
@@ -158,7 +161,7 @@ export function OpsShell({
         <button
           type="button"
           onClick={handleSignOut}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-[12.5px] font-semibold text-white/80 hover:text-[#FF7A8A] hover:border-[#FF7A8A]/40 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-purple-500/20 bg-white/5 text-[12.5px] font-semibold text-white/80 hover:text-red-400 hover:border-red-400/40 transition-colors cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Sign Out</span>
@@ -169,39 +172,37 @@ export function OpsShell({
 
   return (
     <AuthGuard allowedRoles={allowedRoles}>
-      {/* Desktop Fixed Sidebar */}
-      <aside className="hidden lg:block fixed left-0 top-0 h-full w-64 border-r border-white/10 z-50">
+      <aside className="hidden lg:block fixed left-0 top-0 h-full w-64 border-r border-purple-500/15 z-50">
         {SidebarContent}
       </aside>
 
-      {/* Mobile Sidebar Drawer */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="relative w-64 max-w-[82vw] h-full border-r border-white/10 shadow-2xl z-10">
+          <aside className="relative w-64 max-w-[82vw] h-full border-r border-purple-500/20 shadow-2xl z-10">
             {SidebarContent}
           </aside>
         </div>
       )}
 
-      <div className="lg:pl-64 min-h-screen flex flex-col bg-[#13111C] text-white">
-        <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-[#181523]/95 backdrop-blur-md border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-40 flex items-center justify-between gap-2 px-3 sm:px-5 lg:px-6">
+      <div className="lg:pl-64 min-h-screen flex flex-col bg-[#090712] text-white">
+        <header className="fixed top-0 left-0 lg:left-64 right-0 h-16 bg-[#0E0B1A]/90 backdrop-blur-md border-b border-purple-500/15 shadow-[0_4px_25px_rgba(0,0,0,0.6)] z-40 flex items-center justify-between gap-2 px-3 sm:px-5 lg:px-6">
           <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open sidebar"
-              className="lg:hidden p-2 rounded-xl border border-white/10 bg-white/5 text-white shrink-0 cursor-pointer"
+              className="lg:hidden p-2 rounded-xl border border-purple-500/20 bg-white/5 text-white shrink-0 cursor-pointer"
             >
               <Menu className="w-5 h-5" />
             </button>
             <span className="text-[17px] sm:text-[18px] font-bold text-white tracking-tight truncate">
               {consoleTitle}
             </span>
-            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-[#D61CFF]/20 text-[#E040FB] border border-[#D61CFF]/40 text-xs font-bold uppercase whitespace-nowrap shrink-0">
+            <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/35 text-xs font-bold uppercase whitespace-nowrap shrink-0">
               {consoleBadge}
             </span>
           </div>
@@ -209,7 +210,7 @@ export function OpsShell({
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link
               href="/passes#retrieve"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/15 bg-white/5 text-[12.5px] font-semibold text-white/90 hover:bg-white/15 transition-all whitespace-nowrap shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-purple-500/25 bg-purple-500/10 text-[12.5px] font-semibold text-purple-200 hover:bg-purple-500/20 transition-all whitespace-nowrap shrink-0"
             >
               <Search className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden md:inline">Find Pass</span>
@@ -220,15 +221,15 @@ export function OpsShell({
               className="relative p-2 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors shrink-0 cursor-pointer"
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#E040FB] ring-2 ring-[#181523]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#c084fc] ring-2 ring-[#0E0B1A]" />
             </button>
-            <div className="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-[#D61CFF] to-[#8A2BE2] items-center justify-center shrink-0 text-white font-bold text-xs">
+            <div className="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-[#c084fc] to-[#7c3aed] items-center justify-center shrink-0 text-white font-bold text-xs">
               {userInitials}
             </div>
           </div>
         </header>
 
-        <main className="relative pt-16 bg-[#13111C] min-h-screen flex-1 text-white">
+        <main className="relative pt-16 bg-[#090712] min-h-screen flex-1 text-white">
           {children}
         </main>
       </div>

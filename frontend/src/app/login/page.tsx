@@ -1,21 +1,13 @@
 "use client";
 
 import React, { Suspense, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  AlertCircle,
   ArrowRight,
-  CheckCircle2,
   GraduationCap,
   LayoutDashboard,
   Loader2,
-  Lock,
-  Mail,
   QrCode,
-  ShieldCheck,
-  Sparkles,
-  User,
 } from "lucide-react";
 import { PublicHeader } from "@/components/PublicHeader";
 import { PublicFooter } from "@/components/PublicFooter";
@@ -60,7 +52,6 @@ function LoginFormContent() {
     role,
     needsRoleSelection,
     loading,
-    isConfigured,
     signIn,
     signUp,
     signInWithGoogle,
@@ -94,9 +85,7 @@ function LoginFormContent() {
     try {
       if (mode === "signin") {
         const assigned = await signIn(email.trim(), password);
-        if (assigned) {
-          router.replace(getDashboardPath(assigned));
-        }
+        if (assigned) router.replace(getDashboardPath(assigned));
       } else if (mode === "signup") {
         const assigned = await signUp(
           name.trim(),
@@ -128,9 +117,7 @@ function LoginFormContent() {
       const assigned = await signInWithGoogle(
         mode === "signup" ? selectedDashboard : undefined
       );
-      if (assigned) {
-        router.replace(getDashboardPath(assigned));
-      }
+      if (assigned) router.replace(getDashboardPath(assigned));
     } catch (err) {
       setError(
         err instanceof Error
@@ -157,22 +144,19 @@ function LoginFormContent() {
     }
   };
 
-  // If user signed in but needs role assignment
   if (!loading && user && (needsRoleSelection || selectRoleParam || !role)) {
     return (
-      <div className="auth-box">
+      <div className="eh-auth-card">
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div className="logo" style={{ justifyContent: "center", marginBottom: 12 }}>
-            <i />EventHub
-          </div>
-          <h2 style={{ fontSize: 24, fontWeight: 800 }}>Assign Account Workspace</h2>
-          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 6 }}>
-            Welcome, <b>{user.displayName || user.email}</b>. Choose your portal:
+          <img src="/logo.png" alt="EventHub" className="eh-brand-logo" style={{ width: 44, height: 44, margin: "0 auto 12px" }} />
+          <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Assign Your Workspace</h1>
+          <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 6 }}>
+            Welcome, <strong style={{ color: "#fff" }}>{user.displayName || user.email}</strong>. Pick the dashboard role for your account:
           </p>
         </div>
 
         {error && (
-          <div style={{ background: "rgba(255,80,80,.15)", border: "1px solid #FF5050", color: "#FF8080", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
+          <div style={{ background: "rgba(248,113,113,.15)", border: "1px solid rgba(248,113,113,.45)", color: "#fca5a5", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
             {error}
           </div>
         )}
@@ -186,16 +170,28 @@ function LoginFormContent() {
                 key={opt.id}
                 type="button"
                 onClick={() => setSelectedDashboard(opt.id)}
-                className={`role-btn ${active ? "active" : ""}`}
-                style={{ flexDirection: "row", justifyContent: "flex-start", padding: "16px 20px" }}
+                className={`eh-role-tile ${active ? "active" : ""}`}
+                style={{ flexDirection: "row", justifyContent: "flex-start", padding: "14px 16px", gap: 14, textAlign: "left" }}
               >
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: active ? "var(--mag)" : "rgba(255,255,255,.08)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: active ? "var(--g)" : "rgba(255,255,255,0.06)",
+                    color: "#fff",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
                   <Icon className="w-5 h-5" />
-                </div>
-                <div style={{ textAlign: "left", flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15 }}>{opt.title}</div>
-                  <div style={{ color: "var(--muted)", fontSize: 12 }}>{opt.tagline}</div>
-                </div>
+                </span>
+                <span>
+                  <strong style={{ display: "block", fontSize: 14.5, color: "#fff" }}>{opt.title}</strong>
+                  <span style={{ display: "block", fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{opt.tagline}</span>
+                </span>
               </button>
             );
           })}
@@ -205,50 +201,64 @@ function LoginFormContent() {
           type="button"
           disabled={submitting}
           onClick={handleCompleteRoleAssignment}
-          className="btn"
-          style={{ width: "100%", padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+          className="eh-btn-primary"
+          style={{ width: "100%", height: 46 }}
         >
-          {submitting ? <Loader2 className="animate-spin" style={{ width: 18, height: 18 }} /> : <>Continue to Selected Workspace <ArrowRight style={{ width: 16, height: 16 }} /></>}
+          {submitting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              Continue to Workspace
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
         </button>
       </div>
     );
   }
 
   return (
-    <div className="auth-box">
-      {/* Auth Card Header */}
+    <div className="eh-auth-card">
       <div style={{ textAlign: "center", marginBottom: 22 }}>
-        <div className="logo" style={{ justifyContent: "center", marginBottom: 10 }}>
-          <i />EventHub
-        </div>
-        <h2 style={{ fontSize: 24, fontWeight: 800 }}>
+        <img src="/logo.png" alt="EventHub" className="eh-brand-logo" style={{ width: 44, height: 44, margin: "0 auto 10px" }} />
+        <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>
           {mode === "signin"
-            ? "Sign In to EventHub"
+            ? "Sign in to EventHub"
             : mode === "signup"
-              ? "Create Your Account"
-              : "Reset Password"}
-        </h2>
-        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 4 }}>
+              ? "Create your account"
+              : "Reset your password"}
+        </h1>
+        <p style={{ color: "var(--muted)", fontSize: 13.5, marginTop: 6 }}>
           {mode === "signin"
-            ? "Access your passes and assigned dashboard workspace"
+            ? "Access your digital QR passes and assigned workspace."
             : mode === "signup"
-              ? "Select your role to get access to custom tools"
-              : "Enter your student email for a password reset token"}
+              ? "Choose your dashboard role and join Hack4Tech events."
+              : "Enter your registered email for a password reset link."}
         </p>
       </div>
 
-      {/* Mode Switcher Tabs */}
       {mode !== "reset" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, background: "rgba(0,0,0,.3)", padding: 4, borderRadius: 999, marginBottom: 20 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 6,
+            background: "rgba(9, 7, 18, 0.7)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            padding: 4,
+            borderRadius: 999,
+            marginBottom: 22,
+          }}
+        >
           <button
             type="button"
             onClick={() => { setMode("signin"); setError(null); }}
             style={{
               background: mode === "signin" ? "var(--g)" : "transparent",
-              color: "#fff",
+              color: mode === "signin" ? "#fff" : "var(--muted)",
               border: 0,
               borderRadius: 999,
-              padding: "8px 16px",
+              padding: "9px 14px",
               fontWeight: 700,
               fontSize: 13,
               cursor: "pointer",
@@ -261,10 +271,10 @@ function LoginFormContent() {
             onClick={() => { setMode("signup"); setError(null); }}
             style={{
               background: mode === "signup" ? "var(--g)" : "transparent",
-              color: "#fff",
+              color: mode === "signup" ? "#fff" : "var(--muted)",
               border: 0,
               borderRadius: 999,
-              padding: "8px 16px",
+              padding: "9px 14px",
               fontWeight: 700,
               fontSize: 13,
               cursor: "pointer",
@@ -276,24 +286,23 @@ function LoginFormContent() {
       )}
 
       {error && (
-        <div style={{ background: "rgba(255,80,80,.15)", border: "1px solid #FF5050", color: "#FF8080", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
+        <div style={{ background: "rgba(248,113,113,.15)", border: "1px solid rgba(248,113,113,.45)", color: "#fca5a5", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
           {error}
         </div>
       )}
 
       {infoMsg && (
-        <div style={{ background: "rgba(61,220,151,.15)", border: "1px solid var(--mint)", color: "var(--mint)", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
+        <div style={{ background: "rgba(52,211,153,.15)", border: "1px solid rgba(52,211,153,.45)", color: "#6ee7b7", padding: "10px 14px", borderRadius: 12, fontSize: 13, marginBottom: 16 }}>
           {infoMsg}
         </div>
       )}
 
-      {/* Role Picker on Signup */}
       {mode === "signup" && (
         <div style={{ marginBottom: 18 }}>
-          <small style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 700, letterSpacing: ".06em", display: "block", marginBottom: 8 }}>
-            Select Workspace Role *
-          </small>
-          <div className="role-selector" style={{ margin: "0 0 16px" }}>
+          <label style={{ display: "block", fontSize: 11.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--muted)", marginBottom: 8 }}>
+            Assign Workspace Role
+          </label>
+          <div className="eh-role-grid">
             {DASHBOARD_OPTIONS.map((opt) => {
               const Icon = opt.icon;
               const active = selectedDashboard === opt.id;
@@ -302,10 +311,12 @@ function LoginFormContent() {
                   key={opt.id}
                   type="button"
                   onClick={() => setSelectedDashboard(opt.id)}
-                  className={`role-btn ${active ? "active" : ""}`}
+                  className={`eh-role-tile ${active ? "active" : ""}`}
                 >
                   <Icon className="w-5 h-5" />
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>{opt.title.split(" ")[0]}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>
+                    {opt.title.split(" ")[0]}
+                  </span>
                 </button>
               );
             })}
@@ -313,15 +324,16 @@ function LoginFormContent() {
         </div>
       )}
 
-      {/* Main Email/Password Form */}
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {mode === "signup" && (
-          <div className="form-group" style={{ margin: 0 }}>
-            <label>Full Name</label>
+          <div>
+            <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "#d4cee8", marginBottom: 6 }}>
+              Full Name
+            </label>
             <input
               type="text"
               required
-              className="form-input"
+              className="eh-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Alex Chen"
@@ -329,27 +341,29 @@ function LoginFormContent() {
           </div>
         )}
 
-        <div className="form-group" style={{ margin: 0 }}>
-          <label>Campus Email</label>
+        <div>
+          <label style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: "#d4cee8", marginBottom: 6 }}>
+            Campus Email
+          </label>
           <input
             type="email"
             required
-            className="form-input"
+            className="eh-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="alex.chen@campus.edu"
+            placeholder="you@campus.edu"
           />
         </div>
 
         {mode !== "reset" && (
-          <div className="form-group" style={{ margin: 0 }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <label>Password</label>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <label style={{ fontSize: 12.5, fontWeight: 600, color: "#d4cee8" }}>Password</label>
               {mode === "signin" && (
                 <button
                   type="button"
                   onClick={() => { setMode("reset"); setError(null); }}
-                  style={{ background: "none", border: 0, color: "var(--mag)", fontSize: 12, cursor: "pointer", fontWeight: 600 }}
+                  style={{ background: "none", border: 0, color: "#c084fc", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                 >
                   Forgot?
                 </button>
@@ -359,7 +373,7 @@ function LoginFormContent() {
               type="password"
               required
               minLength={6}
-              className="form-input"
+              className="eh-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -370,38 +384,43 @@ function LoginFormContent() {
         <button
           type="submit"
           disabled={submitting}
-          className="btn"
-          style={{ width: "100%", padding: "12px 20px", marginTop: 8 }}
+          className="eh-btn-primary"
+          style={{ width: "100%", height: 46, marginTop: 6 }}
         >
           {submitting ? (
-            <Loader2 className="animate-spin" style={{ width: 18, height: 18, margin: "0 auto" }} />
+            <Loader2 className="w-4 h-4 animate-spin" />
           ) : mode === "signin" ? (
-            "Sign In →"
+            <>
+              Sign In
+              <ArrowRight className="w-4 h-4" />
+            </>
           ) : mode === "signup" ? (
-            `Create ${selectedDashboard.toUpperCase()} Account →`
+            <>
+              Create {selectedDashboard.toUpperCase()} Account
+              <ArrowRight className="w-4 h-4" />
+            </>
           ) : (
             "Send Reset Link"
           )}
         </button>
       </form>
 
-      {/* Google OAuth Provider */}
       {mode !== "reset" && (
         <>
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "var(--line)" }} />
-            <span style={{ fontSize: 12, color: "var(--muted)", textTransform: "uppercase" }}>or</span>
-            <div style={{ flex: 1, height: 1, background: "var(--line)" }} />
+            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
+            <span style={{ fontSize: 11.5, color: "var(--muted)", textTransform: "uppercase" }}>or</span>
+            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.1)" }} />
           </div>
 
           <button
             type="button"
             disabled={submitting}
             onClick={handleGoogle}
-            className="btn-secondary"
-            style={{ width: "100%", justifyContent: "center", padding: "11px 18px" }}
+            className="eh-btn-outline"
+            style={{ width: "100%", height: 44, justifyContent: "center" }}
           >
-            <svg style={{ width: 18, height: 18 }} viewBox="0 0 24 24">
+            <svg style={{ width: 17, height: 17 }} viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
@@ -428,17 +447,28 @@ function LoginFormContent() {
 export default function LoginPage() {
   return (
     <div className="eh">
-      <div className="app" id="top">
-        <PublicHeader />
-
-        <main className="pad" style={{ minHeight: "75vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Suspense fallback={<div style={{ textAlign: "center", padding: 40 }}><Loader2 className="animate-spin" style={{ margin: "0 auto" }} /></div>}>
-            <LoginFormContent />
-          </Suspense>
-        </main>
-
-        <PublicFooter />
-      </div>
+      <PublicHeader />
+      <main
+        className="container"
+        style={{
+          minHeight: "74vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingTop: 28,
+        }}
+      >
+        <Suspense
+          fallback={
+            <div style={{ padding: 48 }}>
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#c084fc" }} />
+            </div>
+          }
+        >
+          <LoginFormContent />
+        </Suspense>
+      </main>
+      <PublicFooter />
     </div>
   );
 }
